@@ -1,0 +1,23 @@
+{
+  "name": "orbit-astronomical-theory-of-ice-ages",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Crynetomega/Orbit-astronomical-theory-of-ice-ages.git"
+  },
+  "author": "Benjamin Thomas Schwertfeger",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Crynetomega/Orbit-astronomical-theory-of-ice-ages/issues"
+  },
+  "homepage": "https://github.com/Crynetomega/Orbit-astronomical-theory-of-ice-ages#readme",
+  "dependencies": {
+    "cubic-spline": "^3.0.3",
+    "tape": "^5.3.1"
+  }
+}

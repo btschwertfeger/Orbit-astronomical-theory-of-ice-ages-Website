@@ -267,3 +267,51 @@ input:checked + .switch-slider:before {
     # ===================================================================================
     // GENERAL
     */
+
+
+/* PLOT AND INPUT CONTAINER */
+.orbital-plot-content-wrapper {
+  border-radius: 30px 30px 30px 30px;
+  box-shadow: 26px 0px 52px #969696, -26px -26px 52px #ffffff;
+}
+
+.orbital-input-section{
+  border-radius: 0px 0px 30px 30px;
+  box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff;
+}
+
+.orbital-line-plot-container {
+  z-index: 5;
+  position: relative;
+  -webkit-transform: translateZ(0);
+
+  position: relative;
+  -webkit-appearance: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.bm-plot-content-wrapper {
+    width: 100%;
+    min-height: 575px;
+    margin: 0 auto;
+    border-radius: 30px 30px 30px 30px;
+    font-size: 0;
+}
+.orbital-line-plot-container {
+    display: inline-block;
+    margin: 0 auto;
+    width: 100%;
+    height: 500px;
+}
+  
+.orbital-input-section {
+    margin: 0 auto;
+    text-align: center;
+    font-size: 18px;
+}
+.orbital-input-section button {
+    margin: 15px 5px 15px 0px;
+    vertical-align: top;
+}

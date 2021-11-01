@@ -2,3 +2,4 @@ deploy.sh
 orbital.data.csv
 Orbital_param.tab
 node_modules/
+.DS_Store
