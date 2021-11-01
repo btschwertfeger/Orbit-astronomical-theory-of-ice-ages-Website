@@ -2,7 +2,7 @@
     ########################################
     ## @author Benjamin Thomas Schwertfeger (October 2021)
     ## copyright by Benjamin Thomas Schwertfeger (October 2021)
-    ## E-Mail: kontakt@b-schwertfeger.de
+    ## https://b-schwertfeger.de
     ############
 --> */
 
@@ -26,7 +26,7 @@
     -moz-backface-visibility: hidden;
     -ms-backface-visibility: hidden;
     -moz-backface-visibility: hidden;
-    -webkit-transform-style: preserve-3d;
+    /* -webkit-transform-style: preserve-3d; */
 }
 
 html {
@@ -259,25 +259,30 @@ input:checked + .switch-slider:before {
     box-shadow: inset 6px 6px 16px #969696, inset -6px -6px 16px #ffffff;
 }
   
-  /*
+#footer{
+    margin-bottom: 30px; /* Add a bottom margin to avoid content overlay */
+}
+/*
     # =========
     # =====================
     # =====================================
     # ===================================================================================
     # ===================================================================================
     // GENERAL
-    */
+*/
 
 
 /* PLOT AND INPUT CONTAINER */
 .orbital-plot-content-wrapper {
   border-radius: 30px 30px 30px 30px;
   box-shadow: 26px 0px 52px #969696, -26px -26px 52px #ffffff;
+
 }
 
 .orbital-input-section{
-  border-radius: 0px 0px 30px 30px;
-  box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff;
+  border-radius: 30px 30px 0px 0px;
+  /* box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff; */
+  box-shadow: 8px 8px 16px #969696, -8px -8px 16px #ffffff
 }
 
 .orbital-line-plot-container {
@@ -292,9 +297,9 @@ input:checked + .switch-slider:before {
   box-sizing: border-box;
 }
 
-.bm-plot-content-wrapper {
+.orbital-plot-content-wrapper {
     width: 100%;
-    min-height: 575px;
+    min-height: 500px;
     margin: 0 auto;
     border-radius: 30px 30px 30px 30px;
     font-size: 0;
@@ -302,7 +307,7 @@ input:checked + .switch-slider:before {
 .orbital-line-plot-container {
     display: inline-block;
     margin: 0 auto;
-    width: 100%;
+    width: 98%;
     height: 500px;
 }
   
@@ -315,3 +320,14 @@ input:checked + .switch-slider:before {
     margin: 15px 5px 15px 0px;
     vertical-align: top;
 }
+
+#custom-input-section {
+    border-radius: 30px 30px 0px 0px;
+    position: fixed; /* Set the navbar to fixed position */
+    bottom: 0; /* Position the navbar at the bottom of the page */
+    z-index: 10;
+    width: 50%; /* Full width */
+    background-color: white;
+    left: 25%;
+}
+      

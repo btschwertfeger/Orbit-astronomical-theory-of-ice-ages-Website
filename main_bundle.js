@@ -3,13 +3,13 @@
     ########################################
     ## @author Benjamin Thomas Schwertfeger (October 2021)
     ## copyright by Benjamin Thomas Schwertfeger (October 2021)
-    ## E-Mail: kontakt@b-schwertfeger.de
+    ## https://b-schwertfeger.de
     ############
 --> */
 
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-// HELPER FUNCTIONS
+// --> HELPER FUNCTIONS
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
 
@@ -29,7 +29,7 @@ function getAvg(grades) {
 
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-// CALCULATION
+// --> CALCULATION
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
 window.TIMESTEPS = 5000;
@@ -56,7 +56,7 @@ $(document).ready(function () {
     });
 });
 
-const Spline = require("cubic-spline");
+// const Spline = require("cubic-spline");
 
 function processData(allText, kyear) {
     let allTextLines = allText.split(/\r\n|\n/);
@@ -86,12 +86,9 @@ function processData(allText, kyear) {
                     epsilon0.push(parseFloat(data[j]));
             }
         }
-        // if (i == 5000) {
-        //     break;
-        // }
     }
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ---------- ----- ----- */
-    // BEGIN TESTING
+    // --> BEGIN TESTING
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ---------- ----- ----- */
 
     // var ky0TEST = [1, 2, 3, 4, 5, 6];
@@ -107,7 +104,7 @@ function processData(allText, kyear) {
     // console.log(res)
 
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ---------- ----- ----- */
-    // END TESTING
+    // --> END TESTING
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ---------- ----- ----- */
 
     // remove discontinuities(360 degree jumps)
@@ -132,7 +129,7 @@ function processData(allText, kyear) {
     // console.log(window.orbital_global.omega)
     // console.log(window.orbital_global.epsilon)
 
-    plotDefault()
+    plotALL()
 
     // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
 }
@@ -358,48 +355,52 @@ function orbital_parameters_fast(kyear) {
 }
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-// PLOTTING
+// --> PLOTTING
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
-// Plot of insolation for 5.000 kys
-// #Validation
-// #plot(june.65N)
-
-function plotDefault() {
-    // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-
-    const labels = [...new Array(window.TIMESTEPS)].map((elem, index) => -index)
-    const values = new Array();
-
-    for (let year = 0; year < 5000; year++) {
-        values.push(daily_insolation(year, 65, 172, 1, false).Fsw); // false or true for fast and not fast
+function plotALL(input = null) {
+    let day = 172,
+        lat = 65;
+    if (input !== null) {
+        day = input.day, lat = input.lat
     }
 
-    const data = {
-        labels: labels,
-        datasets: [{
-            data: values,
-            fill: false,
-            borderColor: 'rgb(255, 0, 0)',
-            tension: 0.1
-        }]
-    };
-
+    console.log(day, lat)
     // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 
-    document.getElementById('orbital_line_plot').remove();
-    document.getElementById('orbital_line_plot_container').innerHTML = '<canvas id="orbital_line_plot"></canvas>';
-    let ctx = document.getElementById('orbital_line_plot');
-    const config1 = {
+    const time = [...new Array(window.TIMESTEPS)].map((elem, index) => -index)
+
+    const values = new Array();
+    let dailyInsolatoinResult = {
+        Fsw: new Array(),
+        ecc: new Array(),
+        obliquity: new Array(),
+        lambda: new Array(),
+        long_perh: new Array()
+    };
+
+    for (let year = 0; year < 5000; year++) {
+        const res = daily_insolation(year, lat, day, 1, false) // false or true for fast and not fast
+        dailyInsolatoinResult.Fsw.push(res.Fsw);
+        dailyInsolatoinResult.ecc.push(res.ecc);
+        dailyInsolatoinResult.obliquity.push(res.obliquity);
+        dailyInsolatoinResult.long_perh.push(res.long_perh);
+        dailyInsolatoinResult.lambda.push(res.lambda);
+    }
+
+    let default_config = {
         type: 'line',
-        data: data,
+        data: {
+            labels: time,
+            datasets: [],
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 title: {
                     display: true,
-                    text: "Insolation for 5.000 kys",
+                    text: "",
                     font: {
                         Family: window.font_famliy,
                         size: 18,
@@ -426,18 +427,19 @@ function plotDefault() {
                     display: true,
                     title: {
                         display: true,
-                        text: 't',
+                        text: '',
                         font: {
                             family: window.font_famliy,
                             size: 16,
                         },
                     },
+                    // reverse: true
                 },
                 y: {
                     display: true,
                     title: {
                         display: true,
-                        text: 'y',
+                        text: '',
                         font: {
                             family: window.font_famliy,
                             size: 16,
@@ -461,158 +463,267 @@ function plotDefault() {
             },
         },
     };
-    window.orbital_line_plot = new Chart(ctx, config1);
 
-    //     june .65 N.new < -vector()
-    //     for (i in 1: 5000) {
-    //         june .65 N.new[i] < -daily_insolation(kyear = i, lat = 65, day = 172) $Fsw
-    //     }
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 1. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
-    //     plot(-(1: 5000), june .65 N.new, col = "red", type = 'l')
+    const insol5000Data = {
+        label: "Insolation for 5.000 kys",
+        data: dailyInsolatoinResult.Fsw,
+        fill: false,
+        borderColor: 'rgb(255, 0, 0)',
+        pointRadius: 0,
+        tension: 0.1,
+        borderWidth: 2
+    };
+
+    document.getElementById('orbital_line_plot_1').remove();
+    document.getElementById('orbital_line_plot_1_container').innerHTML = '<canvas id="orbital_line_plot_1"></canvas>';
+    let ctx1 = document.getElementById('orbital_line_plot_1');
+
+    let config1 = {
+        ...default_config
+    };
+
+    config1.data.datasets = [insol5000Data];
+    config1.options.plugins.title.text = "Insolation for 5.000 kys";
+    config1.options.plugins.legend.display = false;
+    config1.options.scales.x.title.text = "-(1:5000)";
+    config1.options.scales.y.title.text = "june.65N.new";
+
+    window.orbital_line_plot_1 = new Chart(ctx1, config1);
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 2. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    const insol5000max510 = new Array();
+    for (let i = 0; i < dailyInsolatoinResult.Fsw.length; i++) {
+        if (dailyInsolatoinResult.Fsw[i] > 510) {
+            insol5000max510.push(510);
+        } else {
+            insol5000max510.push(dailyInsolatoinResult.Fsw[i]);
+        }
+    }
+
+    const insol5000max510Data = {
+        label: "Insolation for 5.000 kys y>510 = 510",
+        data: insol5000max510,
+        fill: false,
+        borderColor: 'rgb(255, 0, 0)',
+        pointRadius: 0,
+        tension: 0.1,
+        borderWidth: 2
+    };
+
+    const meanOfInsol = getAvg(insol5000max510);
+
+    let meanInsol5000max510Data = {
+        label: "Mean",
+        data: [...new Array(window.TIMESTEPS)].map(() => meanOfInsol),
+        borderColor: "black",
+        pointRadius: 0,
+        borderDash: [10, 5],
+        fill: false,
+        borderWidth: 1
+    };
+
+    document.getElementById('orbital_line_plot_2').remove();
+    document.getElementById('orbital_line_plot_2_container').innerHTML = '<canvas id="orbital_line_plot_2"></canvas>';
+    let ctx2 = document.getElementById('orbital_line_plot_2');
+    insol5000Data.label = "Insolation for 5.000 kys "
+
+    let config2 = {
+        ...default_config
+    };
+
+    config2.data.datasets = [meanInsol5000max510Data, insol5000max510Data];
+    config2.options.plugins.title.text = "overflowed, non-linear wave";
+    config2.options.plugins.legend.display = true;
+    config2.options.scales.x.title.text = "-(1:5000)";
+    config2.options.scales.y.title.text = "wave";
+
+    window.orbital_line_plot_2 = new Chart(ctx2, config2);
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 3. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // plot(time, ecc.new, col = "red", type = 'l')
+
+    document.getElementById('orbital_line_plot_3').remove();
+    document.getElementById('orbital_line_plot_3_container').innerHTML = '<canvas id="orbital_line_plot_3"></canvas>';
+    const ctx3 = document.getElementById('orbital_line_plot_3');
+
+    const dailyInsol_ecc = {
+        label: "ecc",
+        data: dailyInsolatoinResult.ecc,
+        fill: false,
+        borderColor: 'rgb(255, 0, 0)',
+        pointRadius: 0,
+        tension: 0.1,
+        borderWidth: 2
+    };
+
+    let config3 = {
+        ...default_config
+    };
+
+    config3.data.datasets = [dailyInsol_ecc];
+    config3.options.plugins.title.text = "Plot of orbital parameters";
+    config3.options.scales.x.title.text = "-(1:5000)";
+    config3.options.scales.y.title.text = "ecc.new";
+
+    window.orbital_line_plot_3 = new Chart(ctx3, config3);
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 4. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    document.getElementById('orbital_line_plot_4').remove();
+    document.getElementById('orbital_line_plot_4_container').innerHTML = '<canvas id="orbital_line_plot_4"></canvas>';
+    const ctx4 = document.getElementById('orbital_line_plot_4');
+
+    const dailyInsol_obliquity = {
+        label: "ecc",
+        data: dailyInsolatoinResult.obliquity,
+        fill: false,
+        borderColor: 'blue',
+        pointRadius: 0,
+        tension: 0.1,
+        borderWidth: 2
+    };
+
+    let config4 = {
+        ...default_config
+    };
+
+    config4.data.datasets = [dailyInsol_obliquity];
+    config4.options.plugins.title.text = "Plot of orbital parameters";
+    config4.options.scales.x.title.text = "-(1:5000)";
+    config4.options.scales.y.title.text = "obliquity.new";
+
+    window.orbital_line_plot_4 = new Chart(ctx4, config4);
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 5. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    document.getElementById('orbital_line_plot_5').remove();
+    document.getElementById('orbital_line_plot_5_container').innerHTML = '<canvas id="orbital_line_plot_5"></canvas>';
+    const ctx5 = document.getElementById('orbital_line_plot_5');
+
+    const dailyInsol_lambda = {
+        label: "lambda",
+        data: dailyInsolatoinResult.lambda,
+        fill: false,
+        borderColor: 'black',
+        pointRadius: 0,
+        tension: 0.1,
+        borderWidth: 2
+    };
+
+    let config5 = {
+        ...default_config
+    };
+
+    config5.data.datasets = [dailyInsol_lambda];
+    config5.options.plugins.title.text = "Plot of orbital parameters";
+    config5.options.scales.x.title.text = "-(1:5000)";
+    config5.options.scales.y.title.text = "lambda.new";
+
+    window.orbital_line_plot_5 = new Chart(ctx5, config5);
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 6. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // xx <-spectrum(obliquity.new,spans=5,main="spans=5"); abline(v=0:5/100,h=0:1000/1000,lty=3);
+
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 7. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // xxx<-spec.ar(obliquity.new, order = 1)
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 8. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // plot(xx)
+    // lines(xxx$freq,xxx$spec)
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 10. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // xx <-spectrum(wave,spans=5,main="spans=5")
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 11. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // xxx<-spec.ar(wave, order = 1)
+
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+    // 12. PLOT
+    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+    // plot(xx,col="green"); abline(v=0:5/100,h=0:1000/1000,lty=3);
+    // lines(xxx$freq,xxx$spec)
+
 }
-},{"cubic-spline":2}],2:[function(require,module,exports){
-module.exports = class Spline {
-  constructor(xs, ys) {
-    this.xs = xs;
-    this.ys = ys;
-    this.ks = this.getNaturalKs(new Float64Array(this.xs.length));
-  }
 
-  getNaturalKs(ks) {
-    const n = this.xs.length - 1;
-    const A = zerosMat(n + 1, n + 2);
 
-    for (
-      let i = 1;
-      i < n;
-      i++ // rows
-    ) {
-      A[i][i - 1] = 1 / (this.xs[i] - this.xs[i - 1]);
-      A[i][i] =
-        2 *
-        (1 / (this.xs[i] - this.xs[i - 1]) + 1 / (this.xs[i + 1] - this.xs[i]));
-      A[i][i + 1] = 1 / (this.xs[i + 1] - this.xs[i]);
-      A[i][n + 1] =
-        3 *
-        ((this.ys[i] - this.ys[i - 1]) /
-          ((this.xs[i] - this.xs[i - 1]) * (this.xs[i] - this.xs[i - 1])) +
-          (this.ys[i + 1] - this.ys[i]) /
-            ((this.xs[i + 1] - this.xs[i]) * (this.xs[i + 1] - this.xs[i])));
-    }
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+// --> MAKE BUTTONS AND SLIDER DO WHAT THEY SHOULD DO
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
-    A[0][0] = 2 / (this.xs[1] - this.xs[0]);
-    A[0][1] = 1 / (this.xs[1] - this.xs[0]);
-    A[0][n + 1] =
-      (3 * (this.ys[1] - this.ys[0])) /
-      ((this.xs[1] - this.xs[0]) * (this.xs[1] - this.xs[0]));
+const
+    orbital_lat_slide = document.getElementById("orbital_lat_slide"),
+    orbital_day_slide = document.getElementById("orbital_day_slide"),
+    orbital_slide_value_fields = document.getElementsByName("orbital_slide_value"),
+    orbital_slider = document.getElementsByName("orbital_slide"),
+    orbital_plot_variables = ["lat", "day"];
 
-    A[n][n - 1] = 1 / (this.xs[n] - this.xs[n - 1]);
-    A[n][n] = 2 / (this.xs[n] - this.xs[n - 1]);
-    A[n][n + 1] =
-      (3 * (this.ys[n] - this.ys[n - 1])) /
-      ((this.xs[n] - this.xs[n - 1]) * (this.xs[n] - this.xs[n - 1]));
+window.default_orbital_values = {
+    lat: 65,
+    day: 172
+}
+// ----- ----- ----- ----- ----- ----- ----- ----- -----
 
-    return solve(A, ks);
-  }
+const orbital_RESET_BTN = document.getElementById('orbital_resetBtn');
+orbital_RESET_BTN.onclick = function () {
+    plotALL(); // resets the plot
 
-  /**
-   * inspired by https://stackoverflow.com/a/40850313/4417327
-   */
-  getIndexBefore(target) {
-    let low = 0;
-    let high = this.xs.length;
-    let mid = 0;
-    while (low < high) {
-      mid = Math.floor((low + high) / 2);
-      if (this.xs[mid] < target && mid !== low) {
-        low = mid;
-      } else if (this.xs[mid] >= target && mid !== high) {
-        high = mid;
-      } else {
-        high = low;
-      }
-    }
-    return low + 1;
-  }
+    orbital_lat_slide.value = window.default_orbital_values.lat,
+        orbital_day_slide.value = window.default_orbital_values.day;
 
-  at(x) {
-    let i = this.getIndexBefore(x);
-    const t = (x - this.xs[i - 1]) / (this.xs[i] - this.xs[i - 1]);
-    const a =
-      this.ks[i - 1] * (this.xs[i] - this.xs[i - 1]) -
-      (this.ys[i] - this.ys[i - 1]);
-    const b =
-      -this.ks[i] * (this.xs[i] - this.xs[i - 1]) +
-      (this.ys[i] - this.ys[i - 1]);
-    const q =
-      (1 - t) * this.ys[i - 1] +
-      t * this.ys[i] +
-      t * (1 - t) * (a * (1 - t) + b * t);
-    return q;
-  }
-};
-
-function solve(A, ks) {
-  const m = A.length;
-  let h = 0;
-  let k = 0;
-  while (h < m && k <= m) {
-    let i_max = 0;
-    let max = -Infinity;
-    for (let i = h; i < m; i++) {
-      const v = Math.abs(A[i][k]);
-      if (v > max) {
-        i_max = i;
-        max = v;
-      }
-    }
-
-    if (A[i_max][k] === 0) {
-      k++;
-    } else {
-      swapRows(A, h, i_max);
-      for (let i = h + 1; i < m; i++) {
-        const f = A[i][k] / A[h][k];
-        A[i][k] = 0;
-        for (let j = k + 1; j <= m; j++) A[i][j] -= A[h][j] * f;
-      }
-      h++;
-      k++;
-    }
-  }
-
-  for (
-    let i = m - 1;
-    i >= 0;
-    i-- // rows = columns
-  ) {
-    var v = 0;
-    if (A[i][i]) {
-      v = A[i][m] / A[i][i];
-    }
-    ks[i] = v;
-    for (
-      let j = i - 1;
-      j >= 0;
-      j-- // rows
-    ) {
-      A[j][m] -= A[j][i] * v;
-      A[j][i] = 0;
-    }
-  }
-  return ks;
+    orbital_slide_value_fields.forEach((element, index) => { // Reset value fields
+        const default_value = window.default_orbital_values[orbital_plot_variables[index]];
+        document.getElementById(element.id).innerHTML = default_value;
+    });
 }
 
-function zerosMat(r, c) {
-  const A = [];
-  for (let i = 0; i < r; i++) A.push(new Float64Array(c));
-  return A;
+// ----- ----- ----- ----- ----- ----- ----- ----- -----
+for (let entry = 0; entry < orbital_slider.length; entry++) {
+    orbital_slider[entry].oninput = function () {
+        let elem_id = orbital_slider[entry].id;
+        elem_id = elem_id.substring(0, elem_id.length - 5)
+        document.getElementById(elem_id + "value").innerHTML = document.getElementById(orbital_slider[entry].id).value;
+    }
+    orbital_slider[entry].onchange = function () {
+        plotALL({
+            day: parseInt(orbital_day_slide.value),
+            lat: parseInt(orbital_lat_slide.value)
+        });
+    }
 }
 
-function swapRows(m, k, l) {
-  let p = m[k];
-  m[k] = m[l];
-  m[l] = p;
-}
 
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+// EOF
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 },{}]},{},[1]);
