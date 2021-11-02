@@ -6,11 +6,47 @@
     ############
 --> */
 
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+// --> IMPORTS
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+
+const chi = require("chi-squared");
+const {
+    fft,
+    ifft,
+    dft,
+    idft
+} = require("fft-js");
+
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> HELPER FUNCTIONS
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
+const convolve = (vec1, vec2) => {
+    // taken from https://gist.github.com/jdpigeon/1de0b43eed7ae7e4080818cad53be200
+    if (vec1.length === 0 || vec2.length === 0) {
+        throw new Error("Vectors can not be empty!");
+    }
+    const volume = vec1;
+    const kernel = vec2;
+    let displacement = 0;
+    const convVec = [];
+
+    for (let i = 0; i < volume.length; i++) {
+        for (let j = 0; j < kernel.length; j++) {
+            if (displacement + j !== convVec.length) {
+                convVec[displacement + j] =
+                    convVec[displacement + j] + volume[i] * kernel[j];
+            } else {
+                convVec.push(volume[i] * kernel[j]);
+            }
+        }
+        displacement++;
+    }
+
+    return convVec;
+};
 
 function rep(arr, n) {
     // repeat array n times
@@ -26,7 +62,10 @@ function getAvg(grades) {
     return total / grades.length;
 }
 
-
+function spec_pgram() {
+    // https://github.com/telmo-correa/time-series-analysis/blob/master/Python/spectrum.py
+    // AWI-Workspace -> my notebook
+}
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> CALCULATION
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
@@ -541,7 +580,7 @@ function plotALL(input = null) {
     config2.options.plugins.title.text = "overflowed, non-linear wave";
     config2.options.plugins.legend.display = true;
     config2.options.scales.x.title.text = "-(1:5000)";
-    config2.options.scales.y.title.text = "wave";
+    config2.options.scales.y.title.text = "Wave";
 
     window.orbital_line_plot_2 = new Chart(ctx2, config2);
 
@@ -556,7 +595,7 @@ function plotALL(input = null) {
     const ctx3 = document.getElementById('orbital_line_plot_3');
 
     const dailyInsol_ecc = {
-        label: "ecc",
+        label: "Eccentricity",
         data: dailyInsolatoinResult.ecc,
         fill: false,
         borderColor: 'rgb(255, 0, 0)',
@@ -571,8 +610,9 @@ function plotALL(input = null) {
 
     config3.data.datasets = [dailyInsol_ecc];
     config3.options.plugins.title.text = "Plot of orbital parameters";
+    config3.options.plugins.legend.display = false;
     config3.options.scales.x.title.text = "-(1:5000)";
-    config3.options.scales.y.title.text = "ecc.new";
+    config3.options.scales.y.title.text = "Eccentricity";
 
     window.orbital_line_plot_3 = new Chart(ctx3, config3);
 
@@ -585,7 +625,7 @@ function plotALL(input = null) {
     const ctx4 = document.getElementById('orbital_line_plot_4');
 
     const dailyInsol_obliquity = {
-        label: "ecc",
+        label: "Obliquity",
         data: dailyInsolatoinResult.obliquity,
         fill: false,
         borderColor: 'blue',
@@ -600,8 +640,9 @@ function plotALL(input = null) {
 
     config4.data.datasets = [dailyInsol_obliquity];
     config4.options.plugins.title.text = "Plot of orbital parameters";
+    config4.options.plugins.legend.display = false;
     config4.options.scales.x.title.text = "-(1:5000)";
-    config4.options.scales.y.title.text = "obliquity.new";
+    config4.options.scales.y.title.text = "Obliquity";
 
     window.orbital_line_plot_4 = new Chart(ctx4, config4);
 
@@ -614,7 +655,7 @@ function plotALL(input = null) {
     const ctx5 = document.getElementById('orbital_line_plot_5');
 
     const dailyInsol_lambda = {
-        label: "lambda",
+        label: "Lambda",
         data: dailyInsolatoinResult.lambda,
         fill: false,
         borderColor: 'black',
@@ -625,12 +666,13 @@ function plotALL(input = null) {
 
     let config5 = {
         ...default_config
-    };
+    }
 
     config5.data.datasets = [dailyInsol_lambda];
     config5.options.plugins.title.text = "Plot of orbital parameters";
+    config5.options.plugins.legend.display = false;
     config5.options.scales.x.title.text = "-(1:5000)";
-    config5.options.scales.y.title.text = "lambda.new";
+    config5.options.scales.y.title.text = "Lambda";
 
     window.orbital_line_plot_5 = new Chart(ctx5, config5);
 
