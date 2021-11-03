@@ -3,21 +3,24 @@
     ## @author Benjamin Thomas Schwertfeger (October 2021)
     ## copyright by Benjamin Thomas Schwertfeger (October 2021)
     ## https://b-schwertfeger.de
+    ## benjamin.schwertfeger@awi.de
     ############
+
+    // --> comments are taken from the original R implementation 
+
 --> */
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> IMPORTS
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
-const chi = require("chi-squared");
-const {
-    fft,
-    ifft,
-    dft,
-    idft
-} = require("fft-js");
-
+// const chi = require("chi-squared");
+// const {
+//     fft,
+//     ifft,
+//     dft,
+//     idft
+// } = require("fft-js");
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> HELPER FUNCTIONS
@@ -57,7 +60,7 @@ function rep(arr, n) {
     return output
 }
 
-function getAvg(grades) {
+function avg(grades) {
     const total = grades.reduce((acc, c) => acc + c, 0);
     return total / grades.length;
 }
@@ -80,8 +83,7 @@ window.orbital_global = {
 
 $(document).ready(function () {
     // === Load orbital parameters (given each kyr for 0-5Mya) ===
-    // Load the matrix contains data from Berger and Loutre (1991),
-    // downloaded as ORBIT91 from ncdc.noaa.gov
+    // Load the matrix contains data from Berger and Loutre (1991)
 
     $.ajax({
         type: "GET",
@@ -95,7 +97,6 @@ $(document).ready(function () {
 });
 
 // const Spline = require("cubic-spline");
-
 function processData(allText, kyear) {
     let allTextLines = allText.split(/\r\n|\n/);
     let headers = allTextLines[0].split(' ');
@@ -163,9 +164,6 @@ function processData(allText, kyear) {
         window.orbital_global.omega.push(omega0[i] * Math.PI / 180);
         window.orbital_global.epsilon.push(epsilon0[i] * Math.PI / 180);
     }
-    // console.log(window.orbital_global.ecc)
-    // console.log(window.orbital_global.omega)
-    // console.log(window.orbital_global.epsilon)
 
     plotALL()
 
@@ -235,8 +233,13 @@ function insolDec21(kyear, LAT) {
         res.Fsw.push(tmp.Fsw);
         res.lambda.push(tmp.lambda);
     }
-    let shift = 355 - Math.min.apply(Math, res.lambda.map((elem) => Math.abs(elem - 270))); //dann entprechend hinschieben
-    return tlag(res.Fsw, shift);
+    //let shift = 355 - Math.min.apply(Math, res.lambda.map((elem) => Math.abs(elem - 270))); //dann entprechend hinschieben
+    const min = Math.min.apply(Math, res.lambda.map((elem) => Math.abs(elem - 270)));
+    for (let i = 0; i < res.lambda.length; i++) {
+        if (res.lambda[i] == min)
+            return tlag(res.Fsw, 355 - i);
+    }
+    // return tlag(res.Fsw, shift);
 }
 
 function insolDec21_param(ecc, obliquity, long_perh, LAT) {
@@ -255,7 +258,60 @@ function insolDec21_param(ecc, obliquity, long_perh, LAT) {
 }
 
 function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 1) {
-    // Insolation, converted and adapted from Huybers Code, based on Berger 1991
+    /* Insolation, converted and adapted from Huybers Code, based on Berger 1991
+    
+    Description:
+    Computes daily average insolation as a function of day and latitude at
+    any point during the past 5 million years.
+
+    Inputs:
+    kyear:    Thousands of years before present (0 to 5000).
+    lat:      Latitude in degrees (-90 to 90).
+    day:      Indicator of time of year; calendar day by default.
+    day_type: Convention for specifying time of year (+/- 1,2) [optional].
+        day_type=1 (default): day input is calendar day (1-365.24), where day 1
+        is January first.  The calendar is referenced to the vernal equinox
+        which always occurs at day 80.
+        day_type=2: day input is solar longitude (0-360 degrees). Solar
+        longitude is the angle of the Earth's orbit measured from spring
+        equinox (21 March). Note that calendar days and solar longitude are
+        not linearly related because, by Kepler's Second Law, Earth's
+        angular velocity varies according to its distance from the sun.
+    Output:
+    Fsw = Daily average solar radiation in W/m^2.
+    Can also output orbital parameters.
+
+    This script contains orbital parameter data for the past 50000 years
+    from Berger and Loutre (1991).
+
+    Detailed description of calculation:
+    Values for eccentricity, obliquity, and longitude of perihelion for the
+    past 5 Myr are taken from Berger and Loutre 1991 (data from
+    ncdc.noaa.gov). If using calendar days, solar longitude is found using an
+    approximate solution to the differential equation representing conservation
+    of angular momentum (Kepler's Second Law).  Given the orbital parameters
+    and solar longitude, daily average insolation is calculated exactly
+    following Berger 1978.
+
+    References:
+    Berger A. and Loutre M.F. (1991). Insolation values for the climate of
+        the last 10 million years. Quaternary Science Reviews, 10(4), 297-317.
+    Berger A. (1978). Long-term variations of daily insolation and
+        Quaternary climatic changes. Journal of Atmospheric Science, 35(12),
+        2362-2367.
+
+    Authors:
+        Ian Eisenman and Peter Huybers, Harvard University, August 2006
+        eisenman@fas.harvard.edu
+        This file is available online at
+        http://deas.harvard.edu/~eisenman/downloads
+    Translated into JavaScript by Benjamin Thomas Schwertfeger
+    Suggested citation:
+        P. Huybers and I. Eisenman, 2006. Integrated summer insolation
+        calculations. NOAA/NCDC Paleoclimatology Program Data
+        Contribution #2006-079.
+    
+    */
 
     // === Get orbital parameters ===
     let epsilon = obliquity * Math.PI / 180;
@@ -263,7 +319,6 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
 
     // === Calculate insolation ===
     lat = lat * Math.PI / 180 // latitude
-
 
     // lambda (or solar longitude) is the angular distance along Earth's orbit measured from spring equinox (21 March)
     let lambda = null;
@@ -306,7 +361,58 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
 
 
 function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
-    // CALCULATE DAILY INSOLATION
+    /* CALCULATE DAILY INSOLATION
+    Description:
+    Computes daily average insolation as a function of day and latitude at
+    any point during the past 5 million years.
+
+    Inputs:
+    kyear:    Thousands of years before present (0 to 5000).
+    lat:      Latitude in degrees (-90 to 90).
+    day:      Indicator of time of year; calendar day by default.
+    day_type: Convention for specifying time of year (+/- 1,2) [optional].
+        day_type=1 (default): day input is calendar day (1-365.24), where day 1
+        is January first.  The calendar is referenced to the vernal equinox
+        which always occurs at day 80.
+        day_type=2: day input is solar longitude (0-360 degrees). Solar
+        longitude is the angle of the Earth's orbit measured from spring
+        equinox (21 March). Note that calendar days and solar longitude are
+        not linearly related because, by Kepler's Second Law, Earth's
+        angular velocity varies according to its distance from the sun.
+    Output:
+    Fsw = Daily average solar radiation in W/m^2.
+    Can also output orbital parameters.
+
+    This script contains orbital parameter data for the past 50000 years
+    from Berger and Loutre (1991).
+
+    Detailed description of calculation:
+    Values for eccentricity, obliquity, and longitude of perihelion for the
+    past 5 Myr are taken from Berger and Loutre 1991 (data from
+    ncdc.noaa.gov). If using calendar days, solar longitude is found using an
+    approximate solution to the differential equation representing conservation
+    of angular momentum (Kepler's Second Law).  Given the orbital parameters
+    and solar longitude, daily average insolation is calculated exactly
+    following Berger 1978.
+
+    References:
+    Berger A. and Loutre M.F. (1991). Insolation values for the climate of
+        the last 10 million years. Quaternary Science Reviews, 10(4), 297-317.
+    Berger A. (1978). Long-term variations of daily insolation and
+        Quaternary climatic changes. Journal of Atmospheric Science, 35(12),
+        2362-2367.
+
+    Authors:
+        Ian Eisenman and Peter Huybers, Harvard University, August 2006
+        eisenman@fas.harvard.edu
+        This file is available online at
+        http://deas.harvard.edu/~eisenman/downloads
+        Translated into JavaScript by Benjamin Thomas Schwertfeger
+    Suggested citation:
+        P. Huybers and I. Eisenman, 2006. Integrated summer insolation
+        calculations. NOAA/NCDC Paleoclimatology Program Data
+        Contribution #2006-079.
+    */
 
     // === Get orbital parameters ===
     let temp = {};
@@ -379,7 +485,7 @@ function annual_insolation(kyear, lat) {
         for (let day = 0; day < 365; day++) {
             daysInYearInsolation[day] = daily_insolation(kyear[year], lat, day).Fsw
         }
-        result[year] = getAvg(daysInYearInsolation);
+        result[year] = avg(daysInYearInsolation);
     }
     return result;
 }
@@ -555,7 +661,7 @@ function plotALL(input = null) {
         borderWidth: 2
     };
 
-    const meanOfInsol = getAvg(insol5000max510);
+    const meanOfInsol = avg(insol5000max510);
 
     let meanInsol5000max510Data = {
         label: "Mean",

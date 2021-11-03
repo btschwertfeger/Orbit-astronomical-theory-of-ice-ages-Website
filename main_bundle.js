@@ -4,21 +4,24 @@
     ## @author Benjamin Thomas Schwertfeger (October 2021)
     ## copyright by Benjamin Thomas Schwertfeger (October 2021)
     ## https://b-schwertfeger.de
+    ## benjamin.schwertfeger@awi.de
     ############
+
+    // --> comments are taken from the original R implementation 
+
 --> */
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> IMPORTS
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
-const chi = require("chi-squared");
-const {
-    fft,
-    ifft,
-    dft,
-    idft
-} = require("fft-js");
-
+// const chi = require("chi-squared");
+// const {
+//     fft,
+//     ifft,
+//     dft,
+//     idft
+// } = require("fft-js");
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> HELPER FUNCTIONS
@@ -58,7 +61,7 @@ function rep(arr, n) {
     return output
 }
 
-function getAvg(grades) {
+function avg(grades) {
     const total = grades.reduce((acc, c) => acc + c, 0);
     return total / grades.length;
 }
@@ -81,8 +84,7 @@ window.orbital_global = {
 
 $(document).ready(function () {
     // === Load orbital parameters (given each kyr for 0-5Mya) ===
-    // Load the matrix contains data from Berger and Loutre (1991),
-    // downloaded as ORBIT91 from ncdc.noaa.gov
+    // Load the matrix contains data from Berger and Loutre (1991)
 
     $.ajax({
         type: "GET",
@@ -96,7 +98,6 @@ $(document).ready(function () {
 });
 
 // const Spline = require("cubic-spline");
-
 function processData(allText, kyear) {
     let allTextLines = allText.split(/\r\n|\n/);
     let headers = allTextLines[0].split(' ');
@@ -164,9 +165,6 @@ function processData(allText, kyear) {
         window.orbital_global.omega.push(omega0[i] * Math.PI / 180);
         window.orbital_global.epsilon.push(epsilon0[i] * Math.PI / 180);
     }
-    // console.log(window.orbital_global.ecc)
-    // console.log(window.orbital_global.omega)
-    // console.log(window.orbital_global.epsilon)
 
     plotALL()
 
@@ -256,7 +254,60 @@ function insolDec21_param(ecc, obliquity, long_perh, LAT) {
 }
 
 function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 1) {
-    // Insolation, converted and adapted from Huybers Code, based on Berger 1991
+    /* Insolation, converted and adapted from Huybers Code, based on Berger 1991
+    
+    Description:
+    Computes daily average insolation as a function of day and latitude at
+    any point during the past 5 million years.
+
+    Inputs:
+    kyear:    Thousands of years before present (0 to 5000).
+    lat:      Latitude in degrees (-90 to 90).
+    day:      Indicator of time of year; calendar day by default.
+    day_type: Convention for specifying time of year (+/- 1,2) [optional].
+        day_type=1 (default): day input is calendar day (1-365.24), where day 1
+        is January first.  The calendar is referenced to the vernal equinox
+        which always occurs at day 80.
+        day_type=2: day input is solar longitude (0-360 degrees). Solar
+        longitude is the angle of the Earth's orbit measured from spring
+        equinox (21 March). Note that calendar days and solar longitude are
+        not linearly related because, by Kepler's Second Law, Earth's
+        angular velocity varies according to its distance from the sun.
+    Output:
+    Fsw = Daily average solar radiation in W/m^2.
+    Can also output orbital parameters.
+
+    This script contains orbital parameter data for the past 50000 years
+    from Berger and Loutre (1991).
+
+    Detailed description of calculation:
+    Values for eccentricity, obliquity, and longitude of perihelion for the
+    past 5 Myr are taken from Berger and Loutre 1991 (data from
+    ncdc.noaa.gov). If using calendar days, solar longitude is found using an
+    approximate solution to the differential equation representing conservation
+    of angular momentum (Kepler's Second Law).  Given the orbital parameters
+    and solar longitude, daily average insolation is calculated exactly
+    following Berger 1978.
+
+    References:
+    Berger A. and Loutre M.F. (1991). Insolation values for the climate of
+        the last 10 million years. Quaternary Science Reviews, 10(4), 297-317.
+    Berger A. (1978). Long-term variations of daily insolation and
+        Quaternary climatic changes. Journal of Atmospheric Science, 35(12),
+        2362-2367.
+
+    Authors:
+    Ian Eisenman and Peter Huybers, Harvard University, August 2006
+    eisenman@fas.harvard.edu
+    This file is available online at
+    http://deas.harvard.edu/~eisenman/downloads
+    Translated into R by Thomas Laepple
+    Suggested citation:
+    P. Huybers and I. Eisenman, 2006. Integrated summer insolation
+    calculations. NOAA/NCDC Paleoclimatology Program Data
+    Contribution #2006-079.
+    
+    */
 
     // === Get orbital parameters ===
     let epsilon = obliquity * Math.PI / 180;
@@ -264,7 +315,6 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
 
     // === Calculate insolation ===
     lat = lat * Math.PI / 180 // latitude
-
 
     // lambda (or solar longitude) is the angular distance along Earth's orbit measured from spring equinox (21 March)
     let lambda = null;
@@ -307,7 +357,58 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
 
 
 function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
-    // CALCULATE DAILY INSOLATION
+    /* CALCULATE DAILY INSOLATION
+    Description:
+    Computes daily average insolation as a function of day and latitude at
+    any point during the past 5 million years.
+
+    Inputs:
+    kyear:    Thousands of years before present (0 to 5000).
+    lat:      Latitude in degrees (-90 to 90).
+    day:      Indicator of time of year; calendar day by default.
+    day_type: Convention for specifying time of year (+/- 1,2) [optional].
+        day_type=1 (default): day input is calendar day (1-365.24), where day 1
+        is January first.  The calendar is referenced to the vernal equinox
+        which always occurs at day 80.
+        day_type=2: day input is solar longitude (0-360 degrees). Solar
+        longitude is the angle of the Earth's orbit measured from spring
+        equinox (21 March). Note that calendar days and solar longitude are
+        not linearly related because, by Kepler's Second Law, Earth's
+        angular velocity varies according to its distance from the sun.
+    Output:
+    Fsw = Daily average solar radiation in W/m^2.
+    Can also output orbital parameters.
+
+    This script contains orbital parameter data for the past 50000 years
+    from Berger and Loutre (1991).
+
+    Detailed description of calculation:
+    Values for eccentricity, obliquity, and longitude of perihelion for the
+    past 5 Myr are taken from Berger and Loutre 1991 (data from
+    ncdc.noaa.gov). If using calendar days, solar longitude is found using an
+    approximate solution to the differential equation representing conservation
+    of angular momentum (Kepler's Second Law).  Given the orbital parameters
+    and solar longitude, daily average insolation is calculated exactly
+    following Berger 1978.
+
+    References:
+    Berger A. and Loutre M.F. (1991). Insolation values for the climate of
+        the last 10 million years. Quaternary Science Reviews, 10(4), 297-317.
+    Berger A. (1978). Long-term variations of daily insolation and
+        Quaternary climatic changes. Journal of Atmospheric Science, 35(12),
+        2362-2367.
+
+    Authors:
+    Ian Eisenman and Peter Huybers, Harvard University, August 2006
+    eisenman@fas.harvard.edu
+    This file is available online at
+    http://deas.harvard.edu/~eisenman/downloads
+    Translated into R by Thomas Laepple
+    Suggested citation:
+    P. Huybers and I. Eisenman, 2006. Integrated summer insolation
+    calculations. NOAA/NCDC Paleoclimatology Program Data
+    Contribution #2006-079.
+    */
 
     // === Get orbital parameters ===
     let temp = {};
@@ -380,7 +481,7 @@ function annual_insolation(kyear, lat) {
         for (let day = 0; day < 365; day++) {
             daysInYearInsolation[day] = daily_insolation(kyear[year], lat, day).Fsw
         }
-        result[year] = getAvg(daysInYearInsolation);
+        result[year] = avg(daysInYearInsolation);
     }
     return result;
 }
@@ -556,7 +657,7 @@ function plotALL(input = null) {
         borderWidth: 2
     };
 
-    const meanOfInsol = getAvg(insol5000max510);
+    const meanOfInsol = avg(insol5000max510);
 
     let meanInsol5000max510Data = {
         label: "Mean",
@@ -768,736 +869,4 @@ for (let entry = 0; entry < orbital_slider.length; entry++) {
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // EOF
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-},{"chi-squared":4,"fft-js":5}],2:[function(require,module,exports){
-/**
- * Bit twiddling hacks for JavaScript.
- *
- * Author: Mikola Lysenko
- *
- * Ported from Stanford bit twiddling hack library:
- *    http://graphics.stanford.edu/~seander/bithacks.html
- */
-
-"use strict"; "use restrict";
-
-//Number of bits in an integer
-var INT_BITS = 32;
-
-//Constants
-exports.INT_BITS  = INT_BITS;
-exports.INT_MAX   =  0x7fffffff;
-exports.INT_MIN   = -1<<(INT_BITS-1);
-
-//Returns -1, 0, +1 depending on sign of x
-exports.sign = function(v) {
-  return (v > 0) - (v < 0);
-}
-
-//Computes absolute value of integer
-exports.abs = function(v) {
-  var mask = v >> (INT_BITS-1);
-  return (v ^ mask) - mask;
-}
-
-//Computes minimum of integers x and y
-exports.min = function(x, y) {
-  return y ^ ((x ^ y) & -(x < y));
-}
-
-//Computes maximum of integers x and y
-exports.max = function(x, y) {
-  return x ^ ((x ^ y) & -(x < y));
-}
-
-//Checks if a number is a power of two
-exports.isPow2 = function(v) {
-  return !(v & (v-1)) && (!!v);
-}
-
-//Computes log base 2 of v
-exports.log2 = function(v) {
-  var r, shift;
-  r =     (v > 0xFFFF) << 4; v >>>= r;
-  shift = (v > 0xFF  ) << 3; v >>>= shift; r |= shift;
-  shift = (v > 0xF   ) << 2; v >>>= shift; r |= shift;
-  shift = (v > 0x3   ) << 1; v >>>= shift; r |= shift;
-  return r | (v >> 1);
-}
-
-//Computes log base 10 of v
-exports.log10 = function(v) {
-  return  (v >= 1000000000) ? 9 : (v >= 100000000) ? 8 : (v >= 10000000) ? 7 :
-          (v >= 1000000) ? 6 : (v >= 100000) ? 5 : (v >= 10000) ? 4 :
-          (v >= 1000) ? 3 : (v >= 100) ? 2 : (v >= 10) ? 1 : 0;
-}
-
-//Counts number of bits
-exports.popCount = function(v) {
-  v = v - ((v >>> 1) & 0x55555555);
-  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
-  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
-}
-
-//Counts number of trailing zeros
-function countTrailingZeros(v) {
-  var c = 32;
-  v &= -v;
-  if (v) c--;
-  if (v & 0x0000FFFF) c -= 16;
-  if (v & 0x00FF00FF) c -= 8;
-  if (v & 0x0F0F0F0F) c -= 4;
-  if (v & 0x33333333) c -= 2;
-  if (v & 0x55555555) c -= 1;
-  return c;
-}
-exports.countTrailingZeros = countTrailingZeros;
-
-//Rounds to next power of 2
-exports.nextPow2 = function(v) {
-  v += v === 0;
-  --v;
-  v |= v >>> 1;
-  v |= v >>> 2;
-  v |= v >>> 4;
-  v |= v >>> 8;
-  v |= v >>> 16;
-  return v + 1;
-}
-
-//Rounds down to previous power of 2
-exports.prevPow2 = function(v) {
-  v |= v >>> 1;
-  v |= v >>> 2;
-  v |= v >>> 4;
-  v |= v >>> 8;
-  v |= v >>> 16;
-  return v - (v>>>1);
-}
-
-//Computes parity of word
-exports.parity = function(v) {
-  v ^= v >>> 16;
-  v ^= v >>> 8;
-  v ^= v >>> 4;
-  v &= 0xf;
-  return (0x6996 >>> v) & 1;
-}
-
-var REVERSE_TABLE = new Array(256);
-
-(function(tab) {
-  for(var i=0; i<256; ++i) {
-    var v = i, r = i, s = 7;
-    for (v >>>= 1; v; v >>>= 1) {
-      r <<= 1;
-      r |= v & 1;
-      --s;
-    }
-    tab[i] = (r << s) & 0xff;
-  }
-})(REVERSE_TABLE);
-
-//Reverse bits in a 32 bit word
-exports.reverse = function(v) {
-  return  (REVERSE_TABLE[ v         & 0xff] << 24) |
-          (REVERSE_TABLE[(v >>> 8)  & 0xff] << 16) |
-          (REVERSE_TABLE[(v >>> 16) & 0xff] << 8)  |
-           REVERSE_TABLE[(v >>> 24) & 0xff];
-}
-
-//Interleave bits of 2 coordinates with 16 bits.  Useful for fast quadtree codes
-exports.interleave2 = function(x, y) {
-  x &= 0xFFFF;
-  x = (x | (x << 8)) & 0x00FF00FF;
-  x = (x | (x << 4)) & 0x0F0F0F0F;
-  x = (x | (x << 2)) & 0x33333333;
-  x = (x | (x << 1)) & 0x55555555;
-
-  y &= 0xFFFF;
-  y = (y | (y << 8)) & 0x00FF00FF;
-  y = (y | (y << 4)) & 0x0F0F0F0F;
-  y = (y | (y << 2)) & 0x33333333;
-  y = (y | (y << 1)) & 0x55555555;
-
-  return x | (y << 1);
-}
-
-//Extracts the nth interleaved component
-exports.deinterleave2 = function(v, n) {
-  v = (v >>> n) & 0x55555555;
-  v = (v | (v >>> 1))  & 0x33333333;
-  v = (v | (v >>> 2))  & 0x0F0F0F0F;
-  v = (v | (v >>> 4))  & 0x00FF00FF;
-  v = (v | (v >>> 16)) & 0x000FFFF;
-  return (v << 16) >> 16;
-}
-
-
-//Interleave bits of 3 coordinates, each with 10 bits.  Useful for fast octree codes
-exports.interleave3 = function(x, y, z) {
-  x &= 0x3FF;
-  x  = (x | (x<<16)) & 4278190335;
-  x  = (x | (x<<8))  & 251719695;
-  x  = (x | (x<<4))  & 3272356035;
-  x  = (x | (x<<2))  & 1227133513;
-
-  y &= 0x3FF;
-  y  = (y | (y<<16)) & 4278190335;
-  y  = (y | (y<<8))  & 251719695;
-  y  = (y | (y<<4))  & 3272356035;
-  y  = (y | (y<<2))  & 1227133513;
-  x |= (y << 1);
-  
-  z &= 0x3FF;
-  z  = (z | (z<<16)) & 4278190335;
-  z  = (z | (z<<8))  & 251719695;
-  z  = (z | (z<<4))  & 3272356035;
-  z  = (z | (z<<2))  & 1227133513;
-  
-  return x | (z << 2);
-}
-
-//Extracts nth interleaved component of a 3-tuple
-exports.deinterleave3 = function(v, n) {
-  v = (v >>> n)       & 1227133513;
-  v = (v | (v>>>2))   & 3272356035;
-  v = (v | (v>>>4))   & 251719695;
-  v = (v | (v>>>8))   & 4278190335;
-  v = (v | (v>>>16))  & 0x3FF;
-  return (v<<22)>>22;
-}
-
-//Computes next combination in colexicographic order (this is mistakenly called nextPermutation on the bit twiddling hacks page)
-exports.nextCombination = function(v) {
-  var t = v | (v - 1);
-  return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
-}
-
-
-},{}],3:[function(require,module,exports){
-var LogGamma = require('gamma').log
-
-// The following code liberated from
-// http://www.math.ucla.edu/~tom/distributions/chisq.html
-
-function Gcf(X, A) { // Good for X>A+1
-  var A0 = 0;
-  var B0 = 1;
-  var A1 = 1;
-  var B1 = X;
-  var AOLD = 0;
-  var N = 0;
-  while (Math.abs((A1 - AOLD) / A1) > .00001) {
-    AOLD = A1;
-    N = N + 1;
-    A0 = A1 + (N - A) * A0;
-    B0 = B1 + (N - A) * B0;
-    A1 = X * A0 + N * A1;
-    B1 = X * B0 + N * B1;
-    A0 = A0 / B1;
-    B0 = B0 / B1;
-    A1 = A1 / B1;
-    B1 = 1;
-  }
-  var Prob = Math.exp(A * Math.log(X) - X - Math.LogGamma(A)) * A1;
-
-  return 1 - Prob
-}
-
-function Gser(X, A) { // Good for X<A+1.
-  var T9 = 1 / A;
-  var G = T9;
-  var I = 1;
-  while (T9 > G * .00001) {
-    T9 = T9 * X / (A + I);
-    G = G + T9;
-    I = I + 1;
-  }
-  G = G * Math.exp(A * Math.log(X) - X - Math.LogGamma(A));
-
-  return G
-}
-
-function Gammacdf(x, a) {
-  var GI;
-  if (x <= 0) {
-    GI = 0
-  } else if (x < a + 1) {
-    GI = Gser(x, a)
-  } else {
-    GI = Gcf(x, a)
-  }
-  return GI
-}
-
-module.exports = function (Z, DF) {
-  if (DF <= 0) {
-    throw new Error("Degrees of freedom must be positive")
-  }
-  return Gammacdf(Z / 2, DF / 2)
-}
-},{"gamma":12}],4:[function(require,module,exports){
-var gamma = require('gamma');
-
-exports.pdf = function (x, k_) {
-    if (x < 0) return 0;
-    var k = k_ / 2;
-    return 1 / (Math.pow(2, k) * gamma(k))
-        * Math.pow(x, k - 1)
-        * Math.exp(-x / 2)
-    ;
-};
-
-exports.cdf = require('./cdf')
-
-},{"./cdf":3,"gamma":12}],5:[function(require,module,exports){
-/*===========================================================================*\
- * Fast Fourier Transform (Cooley-Tukey Method)
- *
- * (c) Vail Systems. Joshua Jung and Ben Bryan. 2015
- *
- * This code is not designed to be highly optimized but as an educational
- * tool to understand the Fast Fourier Transform.
-\*===========================================================================*/
-module.exports = {
-    fft: require('./src/fft').fft,
-    ifft: require('./src/ifft').ifft,
-    fftInPlace: require('./src/fft').fftInPlace,
-    util: require('./src/fftutil'),
-    dft: require('./src/dft'),
-    idft: require('./src/idft')
-};
-
-},{"./src/dft":7,"./src/fft":8,"./src/fftutil":9,"./src/idft":10,"./src/ifft":11}],6:[function(require,module,exports){
-//-------------------------------------------------
-// Add two complex numbers
-//-------------------------------------------------
-var complexAdd = function (a, b)
-{
-    return [a[0] + b[0], a[1] + b[1]];
-};
-
-//-------------------------------------------------
-// Subtract two complex numbers
-//-------------------------------------------------
-var complexSubtract = function (a, b)
-{
-    return [a[0] - b[0], a[1] - b[1]];
-};
-
-//-------------------------------------------------
-// Multiply two complex numbers
-//
-// (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
-//-------------------------------------------------
-var complexMultiply = function (a, b) 
-{
-    return [(a[0] * b[0] - a[1] * b[1]), 
-            (a[0] * b[1] + a[1] * b[0])];
-};
-
-//-------------------------------------------------
-// Calculate |a + bi|
-//
-// sqrt(a*a + b*b)
-//-------------------------------------------------
-var complexMagnitude = function (c) 
-{
-    return Math.sqrt(c[0]*c[0] + c[1]*c[1]); 
-};
-
-//-------------------------------------------------
-// Exports
-//-------------------------------------------------
-module.exports = {
-    add: complexAdd,
-    subtract: complexSubtract,
-    multiply: complexMultiply,
-    magnitude: complexMagnitude
-};
-
-},{}],7:[function(require,module,exports){
-/*===========================================================================*\
- * Discrete Fourier Transform (O(n^2) brute-force method)
- *
- * (c) Vail Systems. Joshua Jung and Ben Bryan. 2015
- *
- * This code is not designed to be highly optimized but as an educational
- * tool to understand the Fast Fourier Transform.
-\*===========================================================================*/
-
-//------------------------------------------------
-// Note: this code is not optimized and is
-// primarily designed as an educational and testing
-// tool.
-//------------------------------------------------
-var complex = require('./complex');
-var fftUtil = require('./fftutil');
-
-//-------------------------------------------------
-// Calculate brute-force O(n^2) DFT for vector.
-//-------------------------------------------------
-var dft = function(vector) {
-  var X = [],
-      N = vector.length;
-
-  for (var k = 0; k < N; k++) {
-    X[k] = [0, 0]; //Initialize to a 0-valued complex number.
-
-    for (var i = 0; i < N; i++) {
-      var exp = fftUtil.exponent(k * i, N);
-      var term;
-      if (Array.isArray(vector[i]))
-        term = complex.multiply(vector[i], exp)//If input vector contains complex numbers
-      else
-        term = complex.multiply([vector[i], 0], exp);//Complex mult of the signal with the exponential term.  
-      X[k] = complex.add(X[k], term); //Complex summation of X[k] and exponential
-    }
-  }
-
-  return X;
-};
-
-module.exports = dft;
-},{"./complex":6,"./fftutil":9}],8:[function(require,module,exports){
-/*===========================================================================*\
- * Fast Fourier Transform (Cooley-Tukey Method)
- *
- * (c) Vail Systems. Joshua Jung and Ben Bryan. 2015
- *
- * This code is not designed to be highly optimized but as an educational
- * tool to understand the Fast Fourier Transform.
-\*===========================================================================*/
-
-//------------------------------------------------
-// Note: Some of this code is not optimized and is
-// primarily designed as an educational and testing
-// tool.
-// To get high performace would require transforming
-// the recursive calls into a loop and then loop
-// unrolling. All of this is best accomplished
-// in C or assembly.
-//-------------------------------------------------
-
-//-------------------------------------------------
-// The following code assumes a complex number is
-// an array: [real, imaginary]
-//-------------------------------------------------
-var complex = require('./complex'),
-    fftUtil = require('./fftutil'),
-    twiddle = require('bit-twiddle');
-
-module.exports = {
-  //-------------------------------------------------
-  // Calculate FFT for vector where vector.length
-  // is assumed to be a power of 2.
-  //-------------------------------------------------
-  fft: function fft(vector) {
-    var X = [],
-        N = vector.length;
-
-    // Base case is X = x + 0i since our input is assumed to be real only.
-    if (N == 1) {
-      if (Array.isArray(vector[0])) //If input vector contains complex numbers
-        return [[vector[0][0], vector[0][1]]];      
-      else
-        return [[vector[0], 0]];
-    }
-
-    // Recurse: all even samples
-    var X_evens = fft(vector.filter(even)),
-
-        // Recurse: all odd samples
-        X_odds  = fft(vector.filter(odd));
-
-    // Now, perform N/2 operations!
-    for (var k = 0; k < N / 2; k++) {
-      // t is a complex number!
-      var t = X_evens[k],
-          e = complex.multiply(fftUtil.exponent(k, N), X_odds[k]);
-
-      X[k] = complex.add(t, e);
-      X[k + (N / 2)] = complex.subtract(t, e);
-    }
-
-    function even(__, ix) {
-      return ix % 2 == 0;
-    }
-
-    function odd(__, ix) {
-      return ix % 2 == 1;
-    }
-
-    return X;
-  },
-  //-------------------------------------------------
-  // Calculate FFT for vector where vector.length
-  // is assumed to be a power of 2.  This is the in-
-  // place implementation, to avoid the memory
-  // footprint used by recursion.
-  //-------------------------------------------------
-  fftInPlace: function(vector) {
-    var N = vector.length;
-
-    var trailingZeros = twiddle.countTrailingZeros(N); //Once reversed, this will be leading zeros
-
-    // Reverse bits
-    for (var k = 0; k < N; k++) {
-      var p = twiddle.reverse(k) >>> (twiddle.INT_BITS - trailingZeros);
-      if (p > k) {
-        var complexTemp = [vector[k], 0];
-        vector[k] = vector[p];
-        vector[p] = complexTemp;
-      } else {
-        vector[p] = [vector[p], 0];
-      }
-    }
-
-    //Do the DIT now in-place
-    for (var len = 2; len <= N; len += len) {
-      for (var i = 0; i < len / 2; i++) {
-        var w = fftUtil.exponent(i, len);
-        for (var j = 0; j < N / len; j++) {
-          var t = complex.multiply(w, vector[j * len + i + len / 2]);
-          vector[j * len + i + len / 2] = complex.subtract(vector[j * len + i], t);
-          vector[j * len + i] = complex.add(vector[j * len + i], t);
-        }
-      }
-    }
-  }
-};
-
-},{"./complex":6,"./fftutil":9,"bit-twiddle":2}],9:[function(require,module,exports){
-/*===========================================================================*\
- * Fast Fourier Transform Frequency/Magnitude passes
- *
- * (c) Vail Systems. Joshua Jung and Ben Bryan. 2015
- *
- * This code is not designed to be highly optimized but as an educational
- * tool to understand the Fast Fourier Transform.
-\*===========================================================================*/
-
-//-------------------------------------------------
-// The following code assumes a complex number is
-// an array: [real, imaginary]
-//-------------------------------------------------
-var complex = require('./complex');
-
-
-//-------------------------------------------------
-// By Eulers Formula:
-//
-// e^(i*x) = cos(x) + i*sin(x)
-//
-// and in DFT:
-//
-// x = -2*PI*(k/N)
-//-------------------------------------------------
-var mapExponent = {},
-    exponent = function (k, N) {
-      var x = -2 * Math.PI * (k / N);
-
-      mapExponent[N] = mapExponent[N] || {};
-      mapExponent[N][k] = mapExponent[N][k] || [Math.cos(x), Math.sin(x)];// [Real, Imaginary]
-
-      return mapExponent[N][k];
-};
-
-//-------------------------------------------------
-// Calculate FFT Magnitude for complex numbers.
-//-------------------------------------------------
-var fftMag = function (fftBins) {
-    var ret = fftBins.map(complex.magnitude);
-    return ret.slice(0, ret.length / 2);
-};
-
-//-------------------------------------------------
-// Calculate Frequency Bins
-// 
-// Returns an array of the frequencies (in hertz) of
-// each FFT bin provided, assuming the sampleRate is
-// samples taken per second.
-//-------------------------------------------------
-var fftFreq = function (fftBins, sampleRate) {
-    var stepFreq = sampleRate / (fftBins.length);
-    var ret = fftBins.slice(0, fftBins.length / 2);
-
-    return ret.map(function (__, ix) {
-        return ix * stepFreq;
-    });
-};
-
-//-------------------------------------------------
-// Exports
-//-------------------------------------------------
-module.exports = {
-    fftMag: fftMag,
-    fftFreq: fftFreq,
-    exponent: exponent
-};
-
-},{"./complex":6}],10:[function(require,module,exports){
-/*===========================================================================*\
- * Inverse Discrete Fourier Transform (O(n^2) brute-force method)
- *
- * (c) Maximilian Bügler. 2016
- *
- * Based on and using the code by
- * (c) Vail Systems. Joshua Jung and Ben Bryan. 2015
- *
- * This code is not designed to be highly optimized but as an educational
- * tool to understand the Fast Fourier Transform.
-\*===========================================================================*/
-
-//------------------------------------------------
-// Note: Some of this code is not optimized and is
-// primarily designed as an educational and testing
-// tool.
-//-------------------------------------------------
-
-//-------------------------------------------------
-// The following code assumes a complex number is
-// an array: [real, imaginary]
-//-------------------------------------------------
-var dft = require('./dft');
-
-function idft(signal) {
-    //Interchange real and imaginary parts
-    var csignal = [];
-    for (var i = 0; i < signal.length; i++) {
-        csignal[i] = [signal[i][1], signal[i][0]];
-    }
-
-    //Apply dft
-    var ps = dft(csignal);
-
-    //Interchange real and imaginary parts and normalize
-    var res = [];
-    for (var j = 0; j < ps.length; j++) {
-        res[j] = [ps[j][1] / ps.length, ps[j][0] / ps.length];
-    }
-    return res;
-}
-
-module.exports = idft;
-},{"./dft":7}],11:[function(require,module,exports){
-/*===========================================================================*\
- * Inverse Fast Fourier Transform (Cooley-Tukey Method)
- *
- * (c) Maximilian Bügler. 2016
- *
- * Based on and using the code by
- * (c) Vail Systems. Joshua Jung and Ben Bryan. 2015
- *
- * This code is not designed to be highly optimized but as an educational
- * tool to understand the Fast Fourier Transform.
-\*===========================================================================*/
-
-//------------------------------------------------
-// Note: Some of this code is not optimized and is
-// primarily designed as an educational and testing
-// tool.
-// To get high performace would require transforming
-// the recursive calls into a loop and then loop
-// unrolling. All of this is best accomplished
-// in C or assembly.
-//-------------------------------------------------
-
-//-------------------------------------------------
-// The following code assumes a complex number is
-// an array: [real, imaginary]
-//-------------------------------------------------
-
-var fft = require('./fft').fft;
-
-
-module.exports = {
-    ifft: function ifft(signal){
-        //Interchange real and imaginary parts
-        var csignal=[];
-        for(var i=0; i<signal.length; i++){
-            csignal[i]=[signal[i][1], signal[i][0]];
-        }
-    
-        //Apply fft
-        var ps=fft(csignal);
-        
-        //Interchange real and imaginary parts and normalize
-        var res=[];
-        for(var j=0; j<ps.length; j++){
-            res[j]=[ps[j][1]/ps.length, ps[j][0]/ps.length];
-        }
-        return res;
-    }
-};
-
-},{"./fft":8}],12:[function(require,module,exports){
-// transliterated from the python snippet here:
-// http://en.wikipedia.org/wiki/Lanczos_approximation
-
-var g = 7;
-var p = [
-    0.99999999999980993,
-    676.5203681218851,
-    -1259.1392167224028,
-    771.32342877765313,
-    -176.61502916214059,
-    12.507343278686905,
-    -0.13857109526572012,
-    9.9843695780195716e-6,
-    1.5056327351493116e-7
-];
-
-var g_ln = 607/128;
-var p_ln = [
-    0.99999999999999709182,
-    57.156235665862923517,
-    -59.597960355475491248,
-    14.136097974741747174,
-    -0.49191381609762019978,
-    0.33994649984811888699e-4,
-    0.46523628927048575665e-4,
-    -0.98374475304879564677e-4,
-    0.15808870322491248884e-3,
-    -0.21026444172410488319e-3,
-    0.21743961811521264320e-3,
-    -0.16431810653676389022e-3,
-    0.84418223983852743293e-4,
-    -0.26190838401581408670e-4,
-    0.36899182659531622704e-5
-];
-
-// Spouge approximation (suitable for large arguments)
-function lngamma(z) {
-
-    if(z < 0) return Number('0/0');
-    var x = p_ln[0];
-    for(var i = p_ln.length - 1; i > 0; --i) x += p_ln[i] / (z + i);
-    var t = z + g_ln + 0.5;
-    return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)-Math.log(z);
-}
-
-module.exports = function gamma (z) {
-    if (z < 0.5) {
-        return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
-    }
-    else if(z > 100) return Math.exp(lngamma(z));
-    else {
-        z -= 1;
-        var x = p[0];
-        for (var i = 1; i < g + 2; i++) {
-            x += p[i] / (z + i);
-        }
-        var t = z + g + 0.5;
-
-        return Math.sqrt(2 * Math.PI)
-            * Math.pow(t, z + 0.5)
-            * Math.exp(-t)
-            * x
-        ;
-    }
-};
-
-module.exports.log = lngamma;
-
 },{}]},{},[1]);

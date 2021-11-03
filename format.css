@@ -15,6 +15,7 @@
 }
 
 * {
+    font-family: var(--primary-font-family);
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -28,6 +29,23 @@
     -moz-backface-visibility: hidden;
     /* -webkit-transform-style: preserve-3d; */
 }
+
+/* ----- HIDE SCROLLBARS ----- */
+::-webkit-scrollbar {
+    width: 1px;
+    height: 100%;
+}
+::-webkit-scrollbar-button {
+    background: transparent
+}
+::-webkit-scrollbar-track-piece {
+    background: transparent
+}
+::-webkit-scrollbar-thumb {
+    background: transparent
+}
+/* ----- HIDE SCROLLBARS ----- */​
+
 
 html {
     font-family: var(--primary-font-family);
@@ -280,9 +298,9 @@ input:checked + .switch-slider:before {
 }
 
 .orbital-input-section{
-  border-radius: 30px 30px 0px 0px;
+  border-radius: 15px 15px 15px 15px;
   /* box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff; */
-  box-shadow: 8px 8px 16px #969696, -8px -8px 16px #ffffff
+  box-shadow: 8px 8px 16px #969696; /*, -8px -8px 16px #ffffff*/
 }
 
 .orbital-line-plot-container {
@@ -322,9 +340,9 @@ input:checked + .switch-slider:before {
 }
 
 #custom-input-section {
-    border-radius: 30px 30px 0px 0px;
+    border-radius: 15px 15px 15px 15px;
     position: fixed; /* Set the navbar to fixed position */
-    bottom: 0; /* Position the navbar at the bottom of the page */
+    bottom: 10px; /* Position the navbar at the bottom of the page */
     z-index: 10;
     width: 50%; /* Full width */
     background-color: white;
