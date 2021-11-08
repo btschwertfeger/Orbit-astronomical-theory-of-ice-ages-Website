@@ -15,20 +15,28 @@
 // --> IMPORTS
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
-// const chi = require("chi-squared");
-// const {
-//     fft,
-//     ifft,
-//     dft,
-//     idft
-// } = require("fft-js");
-
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> HELPER FUNCTIONS
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
+function dateFromDay(year, day) {
+    day -= 1;
+    Date.prototype.addDays = function (days) {
+        const date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    };
+
+    let date = new Date(year, 0); // initialize a date in `year-01-01`
+    let newdate = date.addDays(day)
+
+    return newdate.toLocaleString('default', {
+        month: "long"
+    }) + ", " + newdate.getDate();
+}
+
 const convolve = (vec1, vec2) => {
-    // taken from https://gist.github.com/jdpigeon/1de0b43eed7ae7e4080818cad53be200
+    // thanks to https://gist.github.com/jdpigeon/1de0b43eed7ae7e4080818cad53be200
     if (vec1.length === 0 || vec2.length === 0) {
         throw new Error("Vectors can not be empty!");
     }
@@ -67,8 +75,8 @@ function avg(grades) {
 }
 
 function spec_pgram() {
-    // https://github.com/telmo-correa/time-series-analysis/blob/master/Python/spectrum.py
-    // AWI-Workspace -> my notebook
+    // described here: https://github.com/telmo-correa/time-series-analysis/blob/master/Python/spectrum.py
+    // 
 }
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> CALCULATION
@@ -83,6 +91,7 @@ window.orbital_global = {
 };
 
 $(document).ready(function () {
+    document.getElementById("dayval").innerHTML = dateFromDay(2021, parseInt(document.getElementById("orbital_day_slide").value));
     // === Load orbital parameters (given each kyr for 0-5Mya) ===
     // Load the matrix contains data from Berger and Loutre (1991)
 
@@ -234,8 +243,13 @@ function insolDec21(kyear, LAT) {
         res.Fsw.push(tmp.Fsw);
         res.lambda.push(tmp.lambda);
     }
-    let shift = 355 - Math.min.apply(Math, res.lambda.map((elem) => Math.abs(elem - 270))); //dann entprechend hinschieben
-    return tlag(res.Fsw, shift);
+    //let shift = 355 - Math.min.apply(Math, res.lambda.map((elem) => Math.abs(elem - 270))); //dann entprechend hinschieben
+    const min = Math.min.apply(Math, res.lambda.map((elem) => Math.abs(elem - 270)));
+    for (let i = 0; i < res.lambda.length; i++) {
+        if (res.lambda[i] == min)
+            return tlag(res.Fsw, 355 - i);
+    }
+    // return tlag(res.Fsw, shift);
 }
 
 function insolDec21_param(ecc, obliquity, long_perh, LAT) {
@@ -297,15 +311,15 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
         2362-2367.
 
     Authors:
-    Ian Eisenman and Peter Huybers, Harvard University, August 2006
-    eisenman@fas.harvard.edu
-    This file is available online at
-    http://deas.harvard.edu/~eisenman/downloads
-    Translated into R by Thomas Laepple
+        Ian Eisenman and Peter Huybers, Harvard University, August 2006
+        eisenman@fas.harvard.edu
+        This file is available online at
+        http://deas.harvard.edu/~eisenman/downloads
+    Translated into JavaScript by Benjamin Thomas Schwertfeger
     Suggested citation:
-    P. Huybers and I. Eisenman, 2006. Integrated summer insolation
-    calculations. NOAA/NCDC Paleoclimatology Program Data
-    Contribution #2006-079.
+        P. Huybers and I. Eisenman, 2006. Integrated summer insolation
+        calculations. NOAA/NCDC Paleoclimatology Program Data
+        Contribution #2006-079.
     
     */
 
@@ -399,15 +413,15 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
         2362-2367.
 
     Authors:
-    Ian Eisenman and Peter Huybers, Harvard University, August 2006
-    eisenman@fas.harvard.edu
-    This file is available online at
-    http://deas.harvard.edu/~eisenman/downloads
-    Translated into R by Thomas Laepple
+        Ian Eisenman and Peter Huybers, Harvard University, August 2006
+        eisenman@fas.harvard.edu
+        This file is available online at
+        http://deas.harvard.edu/~eisenman/downloads
+        Translated into JavaScript by Benjamin Thomas Schwertfeger
     Suggested citation:
-    P. Huybers and I. Eisenman, 2006. Integrated summer insolation
-    calculations. NOAA/NCDC Paleoclimatology Program Data
-    Contribution #2006-079.
+        P. Huybers and I. Eisenman, 2006. Integrated summer insolation
+        calculations. NOAA/NCDC Paleoclimatology Program Data
+        Contribution #2006-079.
     */
 
     // === Get orbital parameters ===
@@ -505,7 +519,6 @@ function plotALL(input = null) {
         day = input.day, lat = input.lat
     }
 
-    console.log(day, lat)
     // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 
     const time = [...new Array(window.TIMESTEPS)].map((elem, index) => -index)
@@ -629,7 +642,7 @@ function plotALL(input = null) {
     config1.data.datasets = [insol5000Data];
     config1.options.plugins.title.text = "Insolation for 5.000 kys";
     config1.options.plugins.legend.display = false;
-    config1.options.scales.x.title.text = "-(1:5000)";
+    config1.options.scales.x.title.text = "kys";
     config1.options.scales.y.title.text = "june.65N.new";
 
     window.orbital_line_plot_1 = new Chart(ctx1, config1);
@@ -681,7 +694,7 @@ function plotALL(input = null) {
     config2.data.datasets = [meanInsol5000max510Data, insol5000max510Data];
     config2.options.plugins.title.text = "overflowed, non-linear wave";
     config2.options.plugins.legend.display = true;
-    config2.options.scales.x.title.text = "-(1:5000)";
+    config2.options.scales.x.title.text = "kys";
     config2.options.scales.y.title.text = "Wave";
 
     window.orbital_line_plot_2 = new Chart(ctx2, config2);
@@ -713,7 +726,7 @@ function plotALL(input = null) {
     config3.data.datasets = [dailyInsol_ecc];
     config3.options.plugins.title.text = "Plot of orbital parameters";
     config3.options.plugins.legend.display = false;
-    config3.options.scales.x.title.text = "-(1:5000)";
+    config3.options.scales.x.title.text = "kys";
     config3.options.scales.y.title.text = "Eccentricity";
 
     window.orbital_line_plot_3 = new Chart(ctx3, config3);
@@ -743,7 +756,7 @@ function plotALL(input = null) {
     config4.data.datasets = [dailyInsol_obliquity];
     config4.options.plugins.title.text = "Plot of orbital parameters";
     config4.options.plugins.legend.display = false;
-    config4.options.scales.x.title.text = "-(1:5000)";
+    config4.options.scales.x.title.text = "kys";
     config4.options.scales.y.title.text = "Obliquity";
 
     window.orbital_line_plot_4 = new Chart(ctx4, config4);
@@ -773,7 +786,7 @@ function plotALL(input = null) {
     config5.data.datasets = [dailyInsol_lambda];
     config5.options.plugins.title.text = "Plot of orbital parameters";
     config5.options.plugins.legend.display = false;
-    config5.options.scales.x.title.text = "-(1:5000)";
+    config5.options.scales.x.title.text = "kys";
     config5.options.scales.y.title.text = "Lambda";
 
     window.orbital_line_plot_5 = new Chart(ctx5, config5);
@@ -850,13 +863,16 @@ orbital_RESET_BTN.onclick = function () {
     });
 }
 
+orbital_lat_slide.oninput = function () {
+    document.getElementById("orbital_lat_value").innerHTML = orbital_lat_slide.value;
+}
 // ----- ----- ----- ----- ----- ----- ----- ----- -----
 for (let entry = 0; entry < orbital_slider.length; entry++) {
-    orbital_slider[entry].oninput = function () {
-        let elem_id = orbital_slider[entry].id;
-        elem_id = elem_id.substring(0, elem_id.length - 5)
-        document.getElementById(elem_id + "value").innerHTML = document.getElementById(orbital_slider[entry].id).value;
-    }
+    // orbital_slider[entry].oninput = function () {
+    //     let elem_id = orbital_slider[entry].id;
+    //     elem_id = elem_id.substring(0, elem_id.length - 5)
+    //     document.getElementById(elem_id + "value").innerHTML = document.getElementById(orbital_slider[entry].id).value;
+    // }
     orbital_slider[entry].onchange = function () {
         plotALL({
             day: parseInt(orbital_day_slide.value),
@@ -865,6 +881,10 @@ for (let entry = 0; entry < orbital_slider.length; entry++) {
     }
 }
 
+orbital_day_slide.oninput = function () {
+    document.getElementById("dayval").innerHTML = dateFromDay(2021, parseInt(document.getElementById("orbital_day_slide").value));
+    document.getElementById("orbital_day_value").innerHTML = orbital_day_slide.value;
+}
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // EOF
