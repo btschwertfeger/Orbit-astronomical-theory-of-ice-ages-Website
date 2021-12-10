@@ -175,6 +175,7 @@ function processData(allText, kyear) {
     }
 
     plotALL()
+    plot_countour_1()
 
     // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
 }
@@ -248,7 +249,7 @@ function insolDec21(kyear, LAT) {
         if (res.lambda[i] == min)
             return tlag(res.Fsw, 355 - i);
     }
-    // return tlag(res.Fsw, shift);
+    return tlag(res.Fsw, shift);
 }
 
 function insolDec21_param(ecc, obliquity, long_perh, LAT) {
@@ -256,7 +257,7 @@ function insolDec21_param(ecc, obliquity, long_perh, LAT) {
         Fsw: new Array(0),
         lambda: new Array(0),
     };
-    for (let day = 1; day < 365 + 1; day++) { //Eigentlich passt 356 besser
+    for (let day = 1; day < 365 + 1; day++) {
         let tmp = daily_insolation_param(LAT, day, ecc, obliquity, long_perh);
         res.Fsw.push(tmp.Fsw);
         res.lambda.push(tmp.lambda);
@@ -341,20 +342,17 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
         lambda = lambda_m + (2 * ecc - 1 / 4 * Math.pow(ecc, 3)) * Math.sin(lambda_m - omega) + (5 / 4) * Math.pow(ecc, 2) * Math.sin(2 * (lambda_m - omega)) + (13 / 12) * Math.pow(ecc, 3) * Math.sin(3 * (lambda_m - omega));
     } else if (day_type === 2) { // solar longitude (1-360)
         lambda = day[i] * 2 * Math.PI / 360; // lambda=0 for spring equinox
-    } else {
-        console.log("was geschieht hier?");
-    }
+    } else console.log("was geschieht hier?");
+
 
     let So = 1365; // solar constant (W/m^2)
     let delta = Math.asin(Math.sin(epsilon) * Math.sin(lambda)); // declination of the sun
     let Ho = Math.acos(-Math.tan(lat) * Math.tan(delta)); // hour angle at sunrise/sunset
 
     // no sunrise or no sunset: Berger 1978 eqn(8), (9)
-    if ((Math.abs(lat) >= Math.PI / 2 - Math.abs(delta)) && (lat * delta > 0)) {
-        Ho = Math.PI;
-    } else {
-        Ho = 0;
-    }
+    if ((Math.abs(lat) >= Math.PI / 2 - Math.abs(delta)) && (lat * delta > 0)) Ho = Math.PI;
+    else Ho = 0;
+
 
     // Insolation: Berger 1978 eq(10)
     let Fsw = So / Math.PI * Math.pow((1 + ecc * Math.cos(lambda - omega)), 2) / Math.pow((1 - Math.pow(ecc, 2)), 2) * (Ho * Math.sin(lat) * Math.sin(delta) + Math.cos(lat) * Math.cos(delta) * Math.sin(Ho));
@@ -425,23 +423,34 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
 
     // === Get orbital parameters ===
     let temp = {};
-    if (fast) {
-        temp = orbital_parameters_fast(kyear)
-        // console.log(temp)
-    } else {
+    if (fast) temp = orbital_parameters_fast(kyear)
+    else {
         temp.ecc = window.orbital_global.ecc[kyear]
         temp.epsilon = window.orbital_global.epsilon[kyear]
         temp.omega = window.orbital_global.omega[kyear]
     }
-    let ecc = temp.ecc,
+
+    let
+        ecc = temp.ecc,
         epsilon = temp.epsilon,
         omega = temp.omega;
 
     // For output of orbital parameters
-    let obliquity = epsilon * 180 / Math.PI,
+    let
+        obliquity = epsilon * 180 / Math.PI,
         long_perh = omega * 180 / Math.PI;
 
+    var x = compute(ecc, obliquity, long_perh, lat, day, day_type)
+    return x;
+}
+
+function compute(ecc, obliquity, long_perh, lat, day, day_type = 1) {
+    let
+        epsilon = (obliquity * Math.PI) / 180,
+        omega = (long_perh * Math.PI) / 180;
+
     // console.log(ecc, epsilon, omega, obliquity, long_perh)
+
     // === Calculate insolation ===
     lat = lat * Math.PI / 180 // latitude
 
@@ -454,11 +463,8 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
         const lambda_m0 = (-2) * ((1 / 2 * ecc + 1 / 8 * Math.pow(ecc, 3)) * (1 + beta) * Math.sin(-omega) - 1 / 4 * Math.pow(ecc, 2) * (1 / 2 + beta) * Math.sin(-2 * omega) + 1 / 8 * Math.pow(ecc, 3) * (1 / 3 + beta) * (Math.sin(-3 * omega)))
         const lambda_m = lambda_m0 + delta_lambda_m
         lambda = lambda_m + (2 * ecc - 1 / 4 * Math.pow(ecc, 3)) * Math.sin(lambda_m - omega) + (5 / 4) * Math.pow(ecc, 2) * Math.sin(2 * (lambda_m - omega)) + (13 / 12) * Math.pow(ecc, 3) * Math.sin(3 * (lambda_m - omega))
-    } else if (day_type == 2) { // solar longitude(1 - 360) {
-        lambda = day * 2 * Math.PI / 360 // lambda = 0  for spring equinox
-    } else {
-        console.log("was geschieht hier?");
-    }
+    } else if (day_type == 2) lambda = day * 2 * Math.PI / 360 // lambda = 0  for spring equinox
+    else console.log("was geschieht hier?");
 
     let So = 1365; // solar constant(W / m ^ 2)
     let delta = Math.asin(Math.sin(epsilon) * Math.sin(lambda)); // declination of the sun
@@ -466,17 +472,14 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
 
     // no sunrise or no sunset: Berger 1978 eqn(8), (9)
     if (Math.abs(lat) >= (Math.PI / 2 - Math.abs(delta))) {
-        if (lat * delta > 0) {
-            Ho = Math.PI;
-        } else {
-            Ho = 0;
-        }
+        if (lat * delta > 0) Ho = Math.PI;
+        else Ho = 0;
     }
 
     // Insolation: Berger 1978 eq(10)
     //Fsw=So/pi*(1+ecc*cos(lambda-omega))^2 /(1-ecc^2)^2 * ( Ho*sin(lat)*sin(delta) + cos(lat)*cos(delta)*sin(Ho))
     let Fsw = So / Math.PI * Math.pow(1 + ecc * Math.cos(lambda - omega), 2) / Math.pow(1 - Math.pow(ecc, 2), 2) * (Ho * Math.sin(lat) * Math.sin(delta) + Math.cos(lat) * Math.cos(delta) * Math.sin(Ho));
-
+    // console.log(Fsw)
     return {
         Fsw: Fsw,
         ecc: ecc,
@@ -511,19 +514,18 @@ function orbital_parameters_fast(kyear) {
 // --> PLOTTING
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
+// line plots
 function plotALL(input = null) {
-    let day = 172,
+    let
+        day = 172,
         lat = 65;
-    if (input !== null) {
-        day = input.day, lat = input.lat
-    }
+    if (input !== null) day = input.day, lat = input.lat;
 
     // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 
     const time = [...new Array(window.TIMESTEPS)].map((elem, index) => -index)
 
-    const values = new Array();
-    let dailyInsolatoinResult = {
+    let dailyInsolationResult = {
         Fsw: new Array(),
         ecc: new Array(),
         obliquity: new Array(),
@@ -533,11 +535,11 @@ function plotALL(input = null) {
 
     for (let year = 0; year < 5000; year++) {
         const res = daily_insolation(year, lat, day, 1, false) // false or true for fast and not fast
-        dailyInsolatoinResult.Fsw.push(res.Fsw);
-        dailyInsolatoinResult.ecc.push(res.ecc);
-        dailyInsolatoinResult.obliquity.push(res.obliquity);
-        dailyInsolatoinResult.long_perh.push(res.long_perh);
-        dailyInsolatoinResult.lambda.push(res.lambda);
+        dailyInsolationResult.Fsw.push(res.Fsw);
+        dailyInsolationResult.ecc.push(res.ecc);
+        dailyInsolationResult.obliquity.push(res.obliquity);
+        dailyInsolationResult.long_perh.push(res.long_perh);
+        dailyInsolationResult.lambda.push(res.lambda);
     }
 
     let default_config = {
@@ -622,7 +624,7 @@ function plotALL(input = null) {
 
     const insol5000Data = {
         label: "Insolation for 5.000 kys",
-        data: dailyInsolatoinResult.Fsw,
+        data: dailyInsolationResult.Fsw,
         fill: false,
         borderColor: 'rgb(255, 0, 0)',
         pointRadius: 0,
@@ -651,11 +653,11 @@ function plotALL(input = null) {
     /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 
     const insol5000max510 = new Array();
-    for (let i = 0; i < dailyInsolatoinResult.Fsw.length; i++) {
-        if (dailyInsolatoinResult.Fsw[i] > 510) {
+    for (let i = 0; i < dailyInsolationResult.Fsw.length; i++) {
+        if (dailyInsolationResult.Fsw[i] > 510) {
             insol5000max510.push(510);
         } else {
-            insol5000max510.push(dailyInsolatoinResult.Fsw[i]);
+            insol5000max510.push(dailyInsolationResult.Fsw[i]);
         }
     }
 
@@ -710,7 +712,7 @@ function plotALL(input = null) {
 
     const dailyInsol_ecc = {
         label: "Eccentricity",
-        data: dailyInsolatoinResult.ecc,
+        data: dailyInsolationResult.ecc,
         fill: false,
         borderColor: 'rgb(255, 0, 0)',
         pointRadius: 0,
@@ -740,7 +742,7 @@ function plotALL(input = null) {
 
     const dailyInsol_obliquity = {
         label: "Obliquity",
-        data: dailyInsolatoinResult.obliquity,
+        data: dailyInsolationResult.obliquity,
         fill: false,
         borderColor: 'blue',
         pointRadius: 0,
@@ -770,7 +772,7 @@ function plotALL(input = null) {
 
     const dailyInsol_lambda = {
         label: "Lambda",
-        data: dailyInsolatoinResult.lambda,
+        data: dailyInsolationResult.lambda,
         fill: false,
         borderColor: 'black',
         pointRadius: 0,
@@ -789,48 +791,7 @@ function plotALL(input = null) {
     config5.options.scales.y.title.text = "Lambda";
 
     window.orbital_line_plot_5 = new Chart(ctx5, config5);
-
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-    // 6. PLOT
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-
-    // xx <-spectrum(obliquity.new,spans=5,main="spans=5"); abline(v=0:5/100,h=0:1000/1000,lty=3);
-
-
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-    // 7. PLOT
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-
-    // xxx<-spec.ar(obliquity.new, order = 1)
-
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-    // 8. PLOT
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-
-    // plot(xx)
-    // lines(xxx$freq,xxx$spec)
-
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-    // 10. PLOT
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-
-    // xx <-spectrum(wave,spans=5,main="spans=5")
-
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-    // 11. PLOT
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-
-    // xxx<-spec.ar(wave, order = 1)
-
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-    // 12. PLOT
-    /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-
-    // plot(xx,col="green"); abline(v=0:5/100,h=0:1000/1000,lty=3);
-    // lines(xxx$freq,xxx$spec)
-
 }
-
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> MAKE BUTTONS AND SLIDER DO WHAT THEY SHOULD DO
@@ -883,6 +844,158 @@ for (let entry = 0; entry < orbital_slider.length; entry++) {
 orbital_day_slide.oninput = function () {
     document.getElementById("dayval").innerHTML = dateFromDay(2021, parseInt(document.getElementById("orbital_day_slide").value));
     document.getElementById("orbital_day_value").innerHTML = orbital_day_slide.value;
+}
+
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+// --> C O N T O U R P L O T S
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function get_insolation_of_year(year) {
+    let result = new Array(0);
+    for (var lat = -90; lat < 90; lat++) {
+        let inner = new Array(0);
+        for (var day = 0; day < 365; day++) {
+            // console.log(daily_insolation(year, lat, day, 1))
+            inner.push(daily_insolation(year, lat, day, 1, false).Fsw);
+        }
+        result.push(inner)
+    }
+    return result;
+}
+
+// function get_insolation_by_parameter(ecc, obliquity, long_perh) {
+//     // CALCULATIOE INSOLATION by parameter
+//     let result = new Array(0);
+//     for (var lat = -90; lat < 90; lat++) {
+//         for (var day = 0; day < 365; day++) {
+//             result.push(compute(ecc, obliquity, long_perh, lat, day).Fsw);
+//         }
+//     }
+//     return result;
+// }
+// daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 1)
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+// --> PLOTTING
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+window.contour_plot_config = {
+    toImageButtonOptions: {
+        format: 'svg',
+        filename: 'contour_1',
+        width: 1920,
+        height: 1080,
+        scale: 1,
+    }
+}
+window.font_famliy = "Helvetica"
+window.contour_plot_layout = {
+    title: {
+        text: "",
+        font: {
+            family: window.font_famliy,
+            size: 18,
+        },
+        xref: 'paper',
+        x: 0.05,
+    },
+    xaxis: {
+        title: {
+            text: "Time",
+            font: {
+                family: window.font_famliy,
+                size: 18,
+                color: "#7f7f7f",
+            },
+        },
+    },
+    yaxis: {
+        title: {
+            text: "Latitude",
+            font: {
+                family: window.font_famliy,
+                size: 18,
+                color: "#7f7f7f",
+            },
+        },
+    },
+};
+
+function plot_contour(input) {
+    console.log(input)
+    Plotly.newPlot(
+        input.divId,
+        input.data,
+        input.layout,
+        // window.contour_plot_config,
+    );
+}
+
+function plot_countour_1(input = {
+    year: 0
+}) {
+
+    const RESULT = get_insolation_of_year(input.year);
+    // console.log(RESULT)
+    var maxRow = RESULT.map(function (row) {
+        return Math.max.apply(Math, row);
+    });
+    var max = Math.max.apply(null, maxRow);
+
+    const contour_plot_data = [{
+        z: RESULT,
+        x: [...new Array(RESULT[0].length)].map((elem, index) => index), // time
+        y: [...new Array(180)].map((elem, index) => index - 90), // latitude
+        type: 'contour',
+        colorscale: 'Jet',
+        line: {
+            smoothing: 1
+        },
+        autocontour: false,
+        colorbar: {
+            title: 'Insolation',
+            // tickvals:[-250,-,50,100],
+            tickfont: {
+                color: 'black',
+            }
+        },
+        contours: {
+            start: 0,
+            end: max,
+            size: 25,
+        }
+    }];
+
+    var layout = Object.assign({}, window.contour_plot_layout);
+    layout.title.text = `Insolation ${(input.year)>0?-input.year:0} ky ago`;
+
+    plot_contour({
+        divId: "contour_1",
+        data: contour_plot_data,
+        layout: layout
+    });
+}
+
+
+
+
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+// --> MAKE BUTTONS AND SLIDER DO WHAT THEY SHOULD DO
+/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+const contour_1_slide_value = document.getElementById("x_input_contour_1_kyear");
+contour_1_slide_value.onchange = function () {
+    plot_countour_1({
+        year: contour_1_slide_value.value
+    });
+}
+
+const contour_1_slider = document.getElementById("contour_1_kyear_slide");
+contour_1_slider.oninput = () => {
+    contour_1_slide_value.value = contour_1_slider.value
+}
+contour_1_slider.onchange = () => {
+    plot_countour_1({
+        year: contour_1_slide_value.value
+    });
 }
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */

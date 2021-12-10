@@ -242,7 +242,7 @@ input:checked + .switch-slider:before {
     display: inline-block;
     vertical-align: top;
     margin: 10px 0px 10px 15px;
-    box-shadow: 12px 12px 32px #969696, -12px -12px 32px #ffffff;
+    box-shadow: 8px 8px 16px #969696, -8px -8px 16px #ffffff;
     border-radius: 15px;
     padding-left: 15px;
     position: relative;
@@ -250,7 +250,7 @@ input:checked + .switch-slider:before {
     transition: box-shadow 0.3s ease-in-out;
 }
 .X-input-wrapper:hover {
-    box-shadow: 22px 22px 32px #969696, -22px -22px 32px #ffffff;
+    box-shadow: 12px 12px 32px #969696, -12px -12px 32px #ffffff;
 }
 .X-input-wrapper input {
     position: relative;
@@ -294,41 +294,60 @@ input:checked + .switch-slider:before {
 .orbital-plot-content-wrapper {
   border-radius: 30px 30px 30px 30px;
   box-shadow: 26px 0px 52px #969696, -26px -26px 52px #ffffff;
-
+  font-size: 0;
+  margin-bottom: 4rem;
 }
 
 .orbital-input-section{
   border-radius: 15px 15px 15px 15px;
   /* box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff; */
   box-shadow: 8px 8px 16px #969696; /*, -8px -8px 16px #ffffff*/
+  margin: 0 auto;
 }
 
-.orbital-line-plot-container {
-  z-index: 5;
-  position: relative;
-  -webkit-transform: translateZ(0);
-
-  position: relative;
-  -webkit-appearance: none;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.orbital-plot-content-wrapper {
+.line-plot-wrapper {
     width: 100%;
-    min-height: 500px;
-    margin: 0 auto;
-    border-radius: 30px 30px 30px 30px;
-    font-size: 0;
-}
-.orbital-line-plot-container {
-    display: inline-block;
-    margin: 0 auto;
-    width: 98%;
     height: 500px;
 }
+.line-plot-container{
+    height: 500px;
+}
+/* ----- ----- ----- CONTOURPLOT STUFF ----- ----- ----- */
+.contour-plot-wrapper{
+    width: 80%;
+    min-height: 600px;
+    margin: 0 auto 4rem auto; 
+}
+
+#year_x_input_section{
+    margin-top:25px;
+    height: 75px;
+    width: 100%;
+    border-radius: 0px 0px 30px 30px;
+    box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff;
+}
+.X_input_field{
+    
+}
+
+/* ----- BOTH PLOT KINDS ----- */
+
+.line-plot-container, .contour-plot-container{
+    
+    width: 98%;
+    z-index: 5;
+    position: relative;
+    -webkit-transform: translateZ(0);
+    -webkit-appearance: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
   
+    display: inline-block;
+    margin: 0 auto;
+}
+
+/* ----- ----- ----- INPUT SECTION ----- ----- ----- */
 .orbital-input-section {
     margin: 0 auto;
     text-align: center;
@@ -353,5 +372,5 @@ input:checked + .switch-slider:before {
     #custom-input-section{
         width:80%;
         left:10%;
-    }
-  }
+    }   
+}
