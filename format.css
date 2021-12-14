@@ -1,8 +1,8 @@
 /* <!--
     ########################################
-    ## @author Benjamin Thomas Schwertfeger (October 2021)
-    ## copyright by Benjamin Thomas Schwertfeger (October 2021)
-    ## https://b-schwertfeger.de
+    ## @author Benjamin Thomas Schwertfeger (2021)
+    ## E-Mail: benjamin.schwertfeger@awi.de
+    ## © Alfred-Wegener-Institute Bremerhaven, Germany (2021)
     ############
 --> */
 
@@ -89,9 +89,9 @@ a {
     min-width: 230px; /*290px;*/
     margin: 5px;
 }
-  .input-wrapper,
-  .slide-value {
-    display: inline-block;
+.input-wrapper,
+.slide-value {
+    display: inline-block;  
 }
   
 .slide {
@@ -254,7 +254,7 @@ input:checked + .switch-slider:before {
 }
 .X-input-wrapper input {
     position: relative;
-    max-width: 70px;
+    /* max-width: 70px; */
     margin-left: 5px;
     padding: 7px;
   
@@ -319,15 +319,18 @@ input:checked + .switch-slider:before {
     margin: 0 auto 4rem auto; 
 }
 
-#year_x_input_section{
+.contour_input_section{
     margin-top:25px;
-    height: 75px;
+    min-height: 75px;
     width: 100%;
     border-radius: 0px 0px 30px 30px;
     box-shadow: 26px 26px 52px #969696, -26px -26px 52px #ffffff;
+    font-size: 17px;
 }
-.X_input_field{
-    
+
+.contour_input_section .input-wrapper input[type=range]{
+    padding: 0px;
+    margin-top:0.5rem;
 }
 
 /* ----- BOTH PLOT KINDS ----- */

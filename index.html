@@ -1,8 +1,8 @@
 <!--
     ########################################
-    ## @author Benjamin Thomas Schwertfeger (October 2021)
-    ## copyright by Benjamin Thomas Schwertfeger (October 2021)
-    ## https://b-schwertfeger.de
+    ## @author Benjamin Thomas Schwertfeger (2021)
+    ## E-Mail: benjamin.schwertfeger@awi.de
+    ## © Alfred-Wegener-Institute Bremerhaven, Germany (2021)
     ############
 -->
 
@@ -85,6 +85,7 @@
                 </div>
 
 
+                <div id="devider"></div>
                 <!-- 2. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
                 <div class="orbital-plot-content-wrapper line-plot-wrapper">
                     <div id="orbital_line_plot_2_container"
@@ -92,7 +93,7 @@
                         <canvas id="orbital_line_plot_2" class="canvas"></canvas>
                     </div>
                 </div>
-
+                
                 <!-- 3. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
                 <div class="orbital-plot-content-wrapper line-plot-wrapper">
                     <div id="orbital_line_plot_3_container"
@@ -111,8 +112,7 @@
                 </div>
 
                 <!-- 5. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-                <div id="devider"></div>
-                
+              
                 <div class="orbital-plot-content-wrapper line-plot-wrapper">
                     <div id="orbital_line_plot_5_container"
                         class="line-plot-container">
@@ -126,20 +126,23 @@
                     <div id="orbital_contour_plot_1_container" class="contour-plot-container">
                         <div id="contour_1" style="height: 500px; width: 80%; margin: 0 auto;"></div>
                     </div>
-                    <div id="year_x_input_section" style="font-size: 17px;">
-                        <div style="width:30rem; margin: 0 auto;">
-                            
+                    <div class="contour_input_section" style="font-size: 17px;">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;">
                             <div class="orbital-input-wrapper input-wrapper">
                                 <div class="X-input-wrapper" style="width:25rem;">
                                     \(ky\):
                                     <input id="x_input_contour_1_kyear" type="text"
-                                    class="X_input_field" value=0 />
+                                        class="X_input_field" value=0
+                                        style="max-width:70px;" />
                             
                                     <input id="contour_1_kyear_slide" type="range"
                                         class="orbital-slide slide"
                                         name="contour_1_kyear_slide"
-                                        min="0" max="4999"
-                                        step="1" value="0" style="margin-top: 0.5em; min-width: 250px">
+                                        min="-4999" max="0"
+                                        step="1" value="0" style="min-width: 250px">
                                 </div>
                             </div>
                         </div>
@@ -148,20 +151,112 @@
 
                 <!-- 2. Plot CONTOUR ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
 
-                <!-- <div class="orbital-plot-content-wrapper contour-plot-wrapper">
-                    <div id="orbital_contour_plot_1_container" class="contour-plot-container">
-                        <div id="contour_2" style="width:100%; height:100%;"></div>
+                <div class="orbital-plot-content-wrapper contour-plot-wrapper">
+                    <div id="orbital_contour_plot_2_container" class="contour-plot-container">
+                        <div id="contour_2" style="height: 500px; width: 80%; margin: 0 auto;"></div>
                     </div>
-                </div> -->
+                    <div class="contour_input_section" style="font-size: 17px;">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;">                            
+                            <div class="orbital-input-wrapper input-wrapper">
+                                <div class="X-input-wrapper" style="width:22rem;">
+                                    \(ky_1\):
+                                    <input id="x_input_contour_2_kyear1" type="text"
+                                        class="X_input_field" value=-125
+                                        style="max-width:70px;" />
+                            
+                                    <input id="contour_2_kyear1_slide" type="range"
+                                        class="orbital-slide slide"
+                                        name="contour_2_kyear_slide"
+                                        min="-4999" max="0"
+                                        step="1" value="-125" style="margin-top: 0.5em; min-width: 12rem">
+                                </div>
 
-                <!-- 13 Plot CONTOUR ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+                                <div class="X-input-wrapper" style="width:22rem;">
+                                    \(ky_2\):
+                                    <input id="x_input_contour_2_kyear2" type="text"
+                                        class="X_input_field" value=0 
+                                        style="max-width:70px;"/>
+                            
+                                    <input id="contour_2_kyear2_slide" type="range"
+                                        class="orbital-slide slide"
+                                        name="contour_2_kyear2_slide"
+                                        min="-4999" max="0"
+                                        step="1" value="0" style="min-width: 12rem">
+                                </div>
 
-                <!-- <div class="orbital-plot-content-wrapper contour-plot-wrapper">
-                    <div id="orbital_contour_plot_1_container"class="contour-plot-container">
-                        <div id="contour_3" style="width:100%; height:100%;"></div>
+                                <button class="someBtn" id="contour_2_resetBtn" style="margin:1em 0em 0em 2em;">Reset</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                 -->
+
+                <!-- 3. Plot Contour ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+
+                <div class="orbital-plot-content-wrapper contour-plot-wrapper">
+                    <div id="orbital_contour_plot_3_container" class="contour-plot-container">
+                        <div id="contour_3" style="height: 500px; width: 80%; margin: 0 auto;"></div>
+                    </div>
+                    <div class="contour_input_section">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;">                            
+                            <div class="orbital-input-wrapper input-wrapper">       
+                                <div class="X-input-wrapper" style="width:18rem;">
+                                    <div>
+                                        \(eccentricity\):
+                                        <input id="x_input_contour_3_ecc" type="text"
+                                            class="X_input_field" value=0.0268550999
+                                            style="width: 8rem; float:right;" />
+                                    </div>
+                            
+                                    <input id="contour_3_ecc_slide" type="range"
+                                        class="orbital-slide slide"
+                                        name="contour_3_ecc_slide"
+                                        min="0" max="0.25"
+                                        step=".0001" value="0.0268550999"
+                                        style="min-width: 15rem">
+                                </div>
+
+                                <div class="X-input-wrapper" style="width:18rem;">
+                                    <div>
+                                        \(obliquity\):
+                                        <input id="x_input_contour_3_obl" type="text"
+                                            class="X_input_field" value=22.525
+                                            style="width: 8rem; float:right;" />
+                                    </div>
+                            
+                                    <input id="contour_3_obl_slide" type="range"
+                                        class="orbital-slide slide"
+                                        name="contour_2_kyear2_slide"
+                                        min="-90" max="90"
+                                        step="0.001" value="22.525" 
+                                        style="min-width: 15rem">
+                                </div>
+
+                                <div class="X-input-wrapper" style="width:18rem;">
+                                    <div>
+                                        \(long\_perh\):
+                                        <input id="x_input_contour_3_long" type="text"
+                                            class="X_input_field" value=-83619.1209
+                                            style="width: 8rem; float:right;" />
+                                    </div>
+                            
+                                    <input id="contour_3_long_slide" type="range"
+                                        class="orbital-slide slide"
+                                        name="contour_2_kyear2_slide"
+                                        min="-100000" max="100000"
+                                        step="1" value="-83619.1209"
+                                        style="min-width: 15rem; padding:0px;">
+                                </div>
+                                <button class="someBtn" id="contour_3_resetBtn" style="margin:2em;">Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -183,8 +278,7 @@
                          min="-0.001" max="-0.0001"
                             step="0.0001" value="-0.001"> 
                 </div>-->
-<!-- 
-                <div class="orbital-input-wrapper input-wrapper">
+                <!-- <div class="orbital-input-wrapper input-wrapper">
                     <div>\(t\) (integration time)</div>
                     <div id="orbital_T_value"
                         name="orbital_slide_value"
