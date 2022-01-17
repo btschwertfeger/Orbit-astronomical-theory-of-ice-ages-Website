@@ -1,13 +1,13 @@
-/* <!--
-    ########################################
-    ## @author Benjamin Thomas Schwertfeger (2021)
-    ## © Alfred-Wegener-Institute Bremerhaven, Germany (2021)
-    ## E-Mail: benjamin.schwertfeger@awi.de
-    ############
-
-    // --> comments are taken from the original R implementation 
-
---> */
+/**
+ * Website to visualize and manipulate orbital parameter (teaching material)
+ * 
+ * © Alfred-Wegener-Institute Bremerhaven, Germany (2021)
+ * @author Benjamin Thomas Schwertfeger (January 2022)
+ * @email development@b-schwertfeger.de
+ * @link https://github.com/btschwertfeger-AWI-Workspace/Orbit-astronomical-theory-of-ice-ages
+ * 
+ * most comments are taken from the original R implementation 
+ **/
 
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // --> HELPER FUNCTIONS
@@ -891,7 +891,7 @@ const
             ticktext: [
                 'January', 'February',
                 'March', 'April', 'May',
-                'June', 'July', 'Aug',
+                'June', 'July', 'August',
                 'September', 'October', 'November',
                 'December'
             ],
