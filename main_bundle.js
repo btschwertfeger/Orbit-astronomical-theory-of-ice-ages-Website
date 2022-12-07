@@ -1,3 +1,4 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
  * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
  * @link https://awi.de
@@ -1274,3 +1275,204 @@ contour_3_resetBtn.onclick = () => {
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // EOF
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+},{"./utils":3,"modified-newton-raphson":2}],2:[function(require,module,exports){
+'use strict';
+
+module.exports = modifiedNewtonRaphson;
+
+function modifiedNewtonRaphson (f, fp, fpp, x0, options) {
+  var x1, y, yp, ypp, tol, maxIter, iter, yph, ymh, yp2h, ym2h, h, hr, h2r, verbose, eps, denom;
+
+  // Iterpret variadic forms:
+  if (typeof fpp !== 'function') {
+    if (typeof fp === 'function') {
+      options = x0;
+      x0 = fpp;
+    } else {
+      options = fpp;
+      x0 = fp;
+      fp = null;
+    }
+    fpp = null;
+  }
+
+  options = options || {};
+  tol = options.tolerance === undefined ? 1e-7 : options.tolerance;
+  eps = options.epsilon === undefined ? 2.220446049250313e-16 : options.epsion;
+  maxIter = options.maxIterations === undefined ? 20 : options.maxIterations;
+  h = options.h === undefined ? 1e-4 : options.h;
+  verbose = options.verbose === undefined ? false : options.verbose;
+  hr = 1 / h;
+  h2r = hr * hr;
+
+  iter = 0;
+  while (iter++ < maxIter) {
+    // Compute the value of the function:
+    y = f(x0);
+
+    // Compute the second derivative using a fourth order central difference:
+    if (fpp) {
+      yp = fp(x0);
+      ypp = fpp(x0);
+    } else {
+      if (fp) {
+        // Has first derivative specified:
+        yp = fp(x0);
+
+        // Evaluate first derivative to compute second numerically:
+        yph = fp(x0 + h);
+        ymh = fp(x0 - h);
+        yp2h = fp(x0 + 2 * h);
+        ym2h = fp(x0 - 2 * h);
+
+        // Second derivative is first derivative of the first derivative:
+        ypp = (8 * (yph - ymh) + (ym2h - yp2h)) * hr / 12;
+      } else {
+        // Needs first and second numerical derivatives:
+        yph = f(x0 + h);
+        ymh = f(x0 - h);
+        yp2h = f(x0 + 2 * h);
+        ym2h = f(x0 - 2 * h);
+
+        yp = (8 * (yph - ymh) + (ym2h - yp2h)) * hr / 12;
+        ypp = (-30 * y + 16 * (yph + ymh) - (yp2h + ym2h)) * h2r / 12;
+      }
+    }
+
+    // Check for badly conditioned first derivative (extremely small relative to function):
+    if (Math.abs(yp) <= eps * Math.abs(y)) {
+      if (verbose) {
+        console.log('Modified Newton-Raphson: failed to converged due to nearly zero first derivative');
+      }
+      return false;
+    }
+
+    denom = (yp * yp - y * ypp);
+
+    if (denom === 0) {
+      if (verbose) {
+        console.log('Modified Newton-Raphson: failed to converged due to divide by zero');
+      }
+      return false;
+    }
+
+    // Update the guess:
+    x1 = x0 - y * yp / denom;
+
+    // Check for convergence:
+    if (Math.abs(x1 - x0) <= tol * Math.abs(x1)) {
+      if (verbose) {
+        console.log('Modified Newton-Raphson: converged to x = ' + x1 + ' after ' + iter + ' iterations');
+      }
+      return x1;
+    }
+
+    // Transfer update to the new guess:
+    x0 = x1;
+  }
+
+  if (verbose) {
+    console.log('Modified Newton-Raphson: Maximum iterations reached (' + maxIter + ')');
+  }
+
+  return false;
+}
+
+},{}],3:[function(require,module,exports){
+/**
+ * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
+ * @link https://awi.de
+ * 
+ * @author Benjamin Thomas Schwertfeger (2022)
+ * @email benjamin.schwertfeger@awi.de
+ * @email development@b-schwertfeger.de
+ * @link https://b-schwertfeger.de
+ * @link https://github.com/btschwertfeger-AWI-Workspace/Orbit-astronomical-theory-of-ice-ages
+ **/
+
+module.exports = {
+    dateFromDay: (year, day) => {
+        day -= 1;
+        Date.prototype.addDays = function (days) {
+            const date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        };
+
+        let date = new Date(year, 0); // initialize a date in `year-01-01`
+        let newdate = date.addDays(day)
+
+        return newdate.toLocaleString('default', {
+            month: 'long'
+        }) + ', ' + newdate.getDate();
+    },
+    convolve: (vec1, vec2) => {
+        // (2021) source: https://gist.github.com/jdpigeon/1de0b43eed7ae7e4080818cad53be200
+        if (vec1.length === 0 || vec2.length === 0) throw new Error('Vectors can not be empty!')
+
+        const
+            volume = vec1,
+            kernel = vec2,
+            convVec = [];
+
+        let displacement = 0;
+
+        for (let i = 0; i < volume.length; i++) {
+            for (let j = 0; j < kernel.length; j++) {
+                if (displacement + j !== convVec.length) convVec[displacement + j] = convVec[displacement + j] + volume[i] * kernel[j];
+                else convVec.push(volume[i] * kernel[j]);
+            }
+            displacement++;
+        }
+        return convVec;
+    },
+    get2dmax: (arr) => {
+        return Math.max.apply(null, arr.map((row) => {
+            return Math.max.apply(Math, row);
+        }));
+    },
+    get2dmin: (arr) => {
+        return Math.min.apply(null, arr.map((row) => {
+            return Math.min.apply(Math, row);
+        }));
+    },
+    rep: (arr, n) => {
+        // repeat array n times
+        let output = new Array(n * arr.length);
+        for (let i = 0; i < output.length; i++)
+            output[i] = arr[i % arr.length];
+
+        return output
+    },
+    avg: (grades) => {
+        const total = grades.reduce((acc, c) => acc + c, 0);
+        return total / grades.length;
+    },
+    arange: (start, end, step = 1) => {
+        var
+            range = [],
+            typeofStart = typeof start,
+            typeofEnd = typeof end;
+
+        if (step === 0) throw TypeError('Step cannot be zero.');
+        if (typeofStart == 'undefined' || typeofEnd == 'undefined') throw TypeError('Must pass start and end arguments.');
+        else if (typeofStart != typeofEnd) throw TypeError('Start and end arguments must be of same type.');
+
+        typeof step == 'undefined' && (step = 1);
+
+        if (end < start) step = -step;
+        if (typeofStart == 'number') {
+            while (step > 0 ? end >= start : end <= start) {
+                range.push(start);
+                start += step;
+            }
+            range.push(start);
+        } else throw TypeError('Only string and number types are supported');
+        return range;
+    },
+    divmod: (x, y) => { return [Math.floor(x / y), x % y] },
+    argMax: (arr) => {
+        return arr.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
+    }
+};
+},{}]},{},[1]);

@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "g": "^2.0.1",
+    "modified-newton-raphson": "^1.0.2",
+    "watchify": "^4.0.0"
+  }
+}

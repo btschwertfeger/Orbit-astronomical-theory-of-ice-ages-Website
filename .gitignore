@@ -5,3 +5,4 @@ deploy.sh
 __pycache__
 .vscode/
 .ipynb_checkpoints/
+node_modules/

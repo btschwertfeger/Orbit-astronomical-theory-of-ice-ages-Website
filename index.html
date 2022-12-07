@@ -1,10 +1,12 @@
 <!--
 /**
- * Website to visualize and manipulate orbital parameter (teaching material)
+ * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
+ * @link https://awi.de
  * 
- * © Alfred-Wegener-Institute Bremerhaven, Germany (2021)
- * @author Benjamin Thomas Schwertfeger (January 2022)
+ * @author Benjamin Thomas Schwertfeger (2022)
+ * @email benjamin.schwertfeger@awi.de
  * @email development@b-schwertfeger.de
+ * @link https://b-schwertfeger.de
  * @link https://github.com/btschwertfeger-AWI-Workspace/Orbit-astronomical-theory-of-ice-ages
  **/
 -->
@@ -30,7 +32,8 @@
     <!-- PLOTLY FOR CONTOURPLOT -->
     <script src="https://cdn.plot.ly/plotly-2.3.0.min.js"></script>
     <!-- CALCULATION -->
-    <script type="module" src="main.js"></script>
+    <!-- <script type="module" src="main.js"></script> -->
+    <script type="module" src="main_bundle.js"></script>
 </head>
 
 <body>
@@ -314,7 +317,7 @@
     <div class="placeholder" style="width:100%;height:62px;"></div>
     <div id="footer" style="text-align:center; margin:0 auto; width:
             50%; font-size: 16px;">Site developed by <a href="https://www.b-schwertfeger.de">Benjamin
-            T. Schwertfeger</a> © 2021
+            T. Schwertfeger</a> 2022
     </div>
     <div class="placeholder" style="width:100%;height:100px;"></div>
 
@@ -322,10 +325,10 @@
         $(document).ready(() => {
             var topOfOthDiv = $("#devider").offset().top;
             $(window).scroll(() => {
-                if ($(window).scrollTop() < topOfOthDiv)  //scrolled past the other div?
-                    $("#custom-input-section").show(); //reached the desired point -- show div
+                if ($(window).scrollTop() < topOfOthDiv)  // scrolled past the other div?
+                    $("#custom-input-section").show(); // reached the desired point -- show div
                 else
-                    $("#custom-input-section").hide(); //else above the desired point -- hide div
+                    $("#custom-input-section").hide(); // else above the desired point -- hide div
             });
         });
 
