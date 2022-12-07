@@ -1,93 +1,24 @@
 /**
- * Website to visualize and manipulate orbital parameter (teaching material)
+ * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
+ * @link https://awi.de
  * 
- * © Alfred-Wegener-Institute Bremerhaven, Germany (2021)
- * @author Benjamin Thomas Schwertfeger (January 2022)
+ * @author Benjamin Thomas Schwertfeger (2022)
+ * @email benjamin.schwertfeger@awi.de
  * @email development@b-schwertfeger.de
- * @link https://github.com/btschwertfeger-AWI-Workspace/Orbit-astronomical-theory-of-ice-ages
+ * @link https://b-schwertfeger.de
  * 
- * most comments are taken from the original R implementation 
  **/
 
-/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-// --> HELPER FUNCTIONS
-/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+import {
+    dateFromDay,
+    convolve,
+    get2dmax, get2dmin,
+    rep,
+    avg
+} from './utils.js';
 
-function dateFromDay(year, day) {
-    day -= 1;
-    Date.prototype.addDays = function (days) {
-        const date = new Date(this.valueOf());
-        date.setDate(date.getDate() + days);
-        return date;
-    };
 
-    let date = new Date(year, 0); // initialize a date in `year-01-01`
-    let newdate = date.addDays(day)
 
-    return newdate.toLocaleString('default', {
-        month: 'long'
-    }) + ', ' + newdate.getDate();
-}
-
-const convolve = (vec1, vec2) => {
-    // (2021) source: https://gist.github.com/jdpigeon/1de0b43eed7ae7e4080818cad53be200
-    if (vec1.length === 0 || vec2.length === 0) throw new Error('Vectors can not be empty!')
-
-    const
-        volume = vec1,
-        kernel = vec2,
-        convVec = [];
-
-    let displacement = 0;
-
-    for (let i = 0; i < volume.length; i++) {
-        for (let j = 0; j < kernel.length; j++) {
-            if (displacement + j !== convVec.length) convVec[displacement + j] = convVec[displacement + j] + volume[i] * kernel[j];
-            else convVec.push(volume[i] * kernel[j]);
-        }
-        displacement++;
-    }
-    return convVec;
-};
-
-function get2dmax(arr) {
-    return Math.max.apply(null, arr.map(function (row) {
-        return Math.max.apply(Math, row);
-    }));
-}
-
-function get2dmin(arr) {
-    return Math.min.apply(null, arr.map(function (row) {
-        return Math.min.apply(Math, row);
-    }));
-}
-
-function rep(arr, n) {
-    // repeat array n times
-    let output = new Array(n * arr.length);
-    for (let i = 0; i < output.length; i++) {
-        output[i] = arr[i % arr.length];
-    }
-    return output
-}
-
-function avg(grades) {
-    const total = grades.reduce((acc, c) => acc + c, 0);
-    return total / grades.length;
-}
-
-/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-// --> CALCULATION
-/* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
-const
-    FONT_FAMILY = 'Helvetica',
-    TIMESTEPS = 5000;
-window.orbital_global = {
-    kyear0: new Array(),
-    ecc: new Array(),
-    epsilon: new Array(),
-    omega: new Array()
-};
 
 $(document).ready(function () {
     document.getElementById('dayval').innerHTML = dateFromDay(2021, parseInt(document.getElementById('orbital_day_slide').value));
@@ -98,7 +29,7 @@ $(document).ready(function () {
         type: 'GET',
         url: 'orbital_param.csv',
         dataType: 'text',
-        success: function (data) {
+        success:  (data) => {
             const kyear = [...new Array(TIMESTEPS)].map((elem, index) => index / 10);
             processData(data, kyear);
         }
@@ -182,6 +113,26 @@ function processData(allText, kyear) {
 
     // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
 }
+/**
+ * ============================================================
+   ____                            _        _   _             
+  / ___|___  _ __ ___  _ __  _   _| |_ __ _| |_(_) ___  _ __  
+ | |   / _ \| '_ ` _ \| '_ \| | | | __/ _` | __| |/ _ \| '_ \ 
+ | |__| (_) | | | | | | |_) | |_| | || (_| | |_| | (_) | | | |
+  \____\___/|_| |_| |_| .__/ \__,_|\__\__,_|\__|_|\___/|_| |_|
+                      |_|     
+ */
+
+const
+    FONT_FAMILY = 'Helvetica',
+    TIMESTEPS = 5000;
+window.orbital_global = {
+    kyear0: new Array(),
+    ecc: new Array(),
+    epsilon: new Array(),
+    omega: new Array()
+};
+
 
 function unwrap(p) {
     //  Q = unwrap(P) corrects the radian phase angles in array P by adding multiples of ±2pi when absolute jumps between consecutive array elements are greater than pi radians.
@@ -829,7 +780,7 @@ orbital_RESET_BTN.onclick = () => {
     });
 }
 
-orbital_lat_slide.oninput = function () {
+orbital_lat_slide.oninput =  () => {
     document.getElementById('orbital_lat_value').innerHTML = orbital_lat_slide.value;
 }
 
@@ -843,7 +794,7 @@ for (let entry = 0; entry < orbital_slider.length; entry++) {
     }
 }
 
-orbital_day_slide.oninput = function () {
+orbital_day_slide.oninput =  () => {
     document.getElementById('dayval').innerHTML = dateFromDay(2021, parseInt(document.getElementById('orbital_day_slide').value));
     document.getElementById('orbital_day_value').innerHTML = orbital_day_slide.value;
 }
@@ -966,7 +917,7 @@ function plot_contour_1(input = {
 const
     contour_1_slide_value = document.getElementById('x_input_contour_1_kyear'),
     contour_1_slider = document.getElementById('contour_1_kyear_slide');
-contour_1_slide_value.onchange = function () {
+contour_1_slide_value.onchange =  () =>{
     plot_contour_1({
         year: contour_1_slide_value.value
     });
@@ -1052,7 +1003,7 @@ contour_2_kyear2_slide.oninput = () => {
     contour_2_year2.value = contour_2_kyear2_slide.value
 }
 
-[contour_2_kyear1_slide, contour_2_kyear2_slide].forEach((e) => {
+[contour_2_kyear1_slide, contour_2_kyear2_slide].forEach(e => {
     e.onchange = () => {
         plot_contour_2({
             year1: contour_2_year1.value,
@@ -1162,7 +1113,7 @@ contour_3_long_slide.oninput = () => {
 });
 
 [contour_3_ecc_input, contour_3_obl_input, contour_3_long_input].forEach((e => {
-    e.onchange = function () {
+    e.onchange =  () =>{
         plot_contour_3(
             contour_3_ecc_input.value,
             contour_3_obl_input.value,

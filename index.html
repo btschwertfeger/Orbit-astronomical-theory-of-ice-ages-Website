@@ -11,264 +11,251 @@
 
 <!DOCTYPE html lang="en">
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Orbit & astronomical theory of ice ages</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="format.css">
-        <link rel="icon" type="image/x-icon" href="https://www.awi.de/typo3conf/ext/sms_boilerplate/Resources/Public/Images/AWI/awi_logo.svg">
 
-        <!-- CHART JS -->
-        <script
-            src='https://cdn.jsdelivr.net/npm/chart.js@3.3.1/dist/chart.min.js'> </script>
-        <script id="MathJax-script" async
-            src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-        </script>
-        <script
-            src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <!-- PLOTLY FOR CONTOURPLOT -->
-        <script src="https://cdn.plot.ly/plotly-2.3.0.min.js"></script>
-        <!-- CALCULATION -->
-        <script type="module" src="main.js"></script>
-    </head>
-    <body>
-        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/AWI_Logo_2017.svg" style="position:absolute; right: 10px; top: 10px; width: 15%;"\>
-        <div class="main">
-            <div class="placeholder" style="width:100%; height:42px"></div>
-                <div id="headline_content" style="width: 90%; margin: 0 auto;">
-                    <h1 style="text-align:center;">Orbit & astronomical theory of ice ages</h1>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Orbit & astronomical theory of ice ages</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon"
+        href="https://www.awi.de/typo3conf/ext/sms_boilerplate/Resources/Public/Images/AWI/awi_logo.svg">
 
-                    <h2>Insolation calculation</h2>
+    <!-- CHART JS -->
+    <script src='https://cdn.jsdelivr.net/npm/chart.js@3.3.1/dist/chart.min.js'> </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- PLOTLY FOR CONTOURPLOT -->
+    <script src="https://cdn.plot.ly/plotly-2.3.0.min.js"></script>
+    <!-- CALCULATION -->
+    <script type="module" src="main.js"></script>
+</head>
 
-                    <ul>
-                        <li><a href="https://paleodyn.uni-bremen.de/gl/htmlR/astronomicalTheory_Berger.pdf" target="_blank">Overview article by A. Berger</a></li>
-                    </ul>
-                    <p >
-                        Paleoclimatic reconstructions help to discover the natural variability of the climate system over 
-                        times scales ranging from years to hundreds of thousands of years. They are fundamental in climate research, 
-                        especially now, because they provide a unique set of data to validate models over climatic situations largely 
-                        different from those of the last 150 years. The climatic situations of the last century are indeed available 
-                        in great detail, but with a very poor diversity. Among the different modes of climatic variations, the 
-                        glacial‐interglacial cycles have the advantage that they provide examples of extreme climates and that their 
-                        primary astronomical cause is now pretty well known. The Astronomical Theory of paleoclimates aims indeed to 
-                        explain these climatic variations occurring with quasi‐periodicities situated between tens and hundreds of 
-                        thousands of years. Such variations are recorded in deep‐sea sediments, in ice sheets and in continental archives.
-                        The origin of these quasi‐cycles lies in the astronomically driven changes of the latitudinal and seasonal 
-                        distribution of the energy that the Earth receives from the Sun. Milutin Milankovitch extensively published about 
-                        this theory between 1920 and 1950, but the relationship between the astronomical parameters, insolation and 
-                        climate, had already been suggested at the beginning of the nineteenth century. There were several authors 
-                        who have contributed to what is now named (often improperly) the Milankovitch astronomical theory.
-                    </p>
-                    <p>
-                        &emsp; ☞ <a href="https://paleodyn.uni-bremen.de/gl/htmlR/Orbital_2020.html" target="_blank">Lecture Page</a>
-                    </p>
-                    <p>
-                        &emsp; ☞ Orbital data source <a target="_blank"
-                            href="http://eisenman.ucsd.edu/code/daily_insolation.m">http://eisenman.ucsd.edu/code/daily_insolation.m</a> 
-                    </p>
-                    <p>
-                        &emsp; ☞ <a download
-                            href="orbital_and_astronomical_theroy_of_ice_ages.ipynb">Download</a> or <a
-                            href="orbital_and_astronomical_theroy_of_ice_ages.html" target="_blank">show</a> Jupyter Notebook (.ipynb)
-                    </p>
-                    <p>
-                        &emsp; ☞ <a download
-                            href="orbital_param.csv">Download</a> orbital data (.csv)
-                    </p>
-                </div>
+<body>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/AWI_Logo_2017.svg"
+        style="position:absolute; right: 10px; top: 10px; width: 15%;" \>
+    <div class="main">
+        <div class="placeholder" style="width:100%; height:42px"></div>
+        <div id="headline_content" style="width: 90%; margin: 0 auto;">
+            <h1 style="text-align:center;">Orbit & astronomical theory of ice ages</h1>
 
-                <div class="placeholder" style="width:100%;height:42px;"></div>
-                <!-- 1. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-                <div class="orbital-plot-content-wrapper line-plot-wrapper">
-                    <div id="orbital_line_plot_1_container"
-                        class="line-plot-container">
-                        <canvas id="orbital_line_plot_1" class="canvas"></canvas>
-                    </div>
-                </div>
+            <h2>Insolation calculation</h2>
+
+            <ul>
+                <li><a href="https://paleodyn.uni-bremen.de/gl/htmlR/astronomicalTheory_Berger.pdf"
+                        target="_blank">Overview article by A. Berger</a></li>
+            </ul>
+            <p>
+                Paleoclimatic reconstructions help to discover the natural variability of the climate system over
+                times scales ranging from years to hundreds of thousands of years. They are fundamental in climate
+                research,
+                especially now, because they provide a unique set of data to validate models over climatic situations
+                largely
+                different from those of the last 150 years. The climatic situations of the last century are indeed
+                available
+                in great detail, but with a very poor diversity. Among the different modes of climatic variations, the
+                glacial‐interglacial cycles have the advantage that they provide examples of extreme climates and that
+                their
+                primary astronomical cause is now pretty well known. The Astronomical Theory of paleoclimates aims
+                indeed to
+                explain these climatic variations occurring with quasi‐periodicities situated between tens and hundreds
+                of
+                thousands of years. Such variations are recorded in deep‐sea sediments, in ice sheets and in continental
+                archives.
+                The origin of these quasi‐cycles lies in the astronomically driven changes of the latitudinal and
+                seasonal
+                distribution of the energy that the Earth receives from the Sun. Milutin Milankovitch extensively
+                published about
+                this theory between 1920 and 1950, but the relationship between the astronomical parameters, insolation
+                and
+                climate, had already been suggested at the beginning of the nineteenth century. There were several
+                authors
+                who have contributed to what is now named (often improperly) the Milankovitch astronomical theory.
+            </p>
+            <p>
+                &emsp; ☞ <a href="https://paleodyn.uni-bremen.de/gl/htmlR/Orbital_2020.html" target="_blank">Lecture
+                    Page</a>
+            </p>
+            <p>
+                &emsp; ☞ Orbital data source <a target="_blank"
+                    href="http://eisenman.ucsd.edu/code/daily_insolation.m">http://eisenman.ucsd.edu/code/daily_insolation.m</a>
+            </p>
+            <p>
+                &emsp; ☞ <a download href="orbital_and_astronomical_theroy_of_ice_ages.ipynb">Download</a> or <a
+                    href="orbital_and_astronomical_theroy_of_ice_ages.html" target="_blank">show</a> Jupyter Notebook
+                (.ipynb)
+            </p>
+            <p>
+                &emsp; ☞ <a download href="orbital_param.csv">Download</a> orbital data (.csv)
+            </p>
+        </div>
+
+        <div class="placeholder" style="width:100%;height:42px;"></div>
+        <!-- 1. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+        <div class="orbital-plot-content-wrapper line-plot-wrapper">
+            <div id="orbital_line_plot_1_container" class="line-plot-container">
+                <canvas id="orbital_line_plot_1" class="canvas"></canvas>
+            </div>
+        </div>
 
 
-                <div id="devider"></div>
-                <!-- 2. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-                <div class="orbital-plot-content-wrapper line-plot-wrapper">
-                    <div id="orbital_line_plot_2_container"
-                        class="line-plot-container">
-                        <canvas id="orbital_line_plot_2" class="canvas"></canvas>
-                    </div>
-                </div>
-                
-                <!-- 3. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-                <div class="orbital-plot-content-wrapper line-plot-wrapper">
-                    <div id="orbital_line_plot_3_container"
-                        class="line-plot-container">
-                        <canvas id="orbital_line_plot_3" class="canvas"></canvas>
-                    </div>
-                </div>
+        <div id="devider"></div>
+        <!-- 2. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+        <div class="orbital-plot-content-wrapper line-plot-wrapper">
+            <div id="orbital_line_plot_2_container" class="line-plot-container">
+                <canvas id="orbital_line_plot_2" class="canvas"></canvas>
+            </div>
+        </div>
 
-                <!-- 4. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+        <!-- 3. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+        <div class="orbital-plot-content-wrapper line-plot-wrapper">
+            <div id="orbital_line_plot_3_container" class="line-plot-container">
+                <canvas id="orbital_line_plot_3" class="canvas"></canvas>
+            </div>
+        </div>
 
-                <div class="orbital-plot-content-wrapper line-plot-wrapper">
-                    <div id="orbital_line_plot_4_container"
-                        class="line-plot-container">
-                        <canvas id="orbital_line_plot_4" class="canvas"></canvas>
-                    </div>
-                </div>
+        <!-- 4. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
 
-                <!-- 5. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-              
-                <div class="orbital-plot-content-wrapper line-plot-wrapper">
-                    <div id="orbital_line_plot_5_container"
-                        class="line-plot-container">
-                        <canvas id="orbital_line_plot_5" class="canvas"></canvas>
-                    </div>
-                </div>
+        <div class="orbital-plot-content-wrapper line-plot-wrapper">
+            <div id="orbital_line_plot_4_container" class="line-plot-container">
+                <canvas id="orbital_line_plot_4" class="canvas"></canvas>
+            </div>
+        </div>
 
-                <!-- 1. Plot CONTOUR ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-                
-                <div class="orbital-plot-content-wrapper contour-plot-wrapper">
-                    <div id="orbital_contour_plot_1_container" class="contour-plot-container">
-                        <div id="contour_1" style="height: 500px; width: 80%; margin: 0 auto;"></div>
-                    </div>
-                    <div class="contour_input_section" style="font-size: 17px;">
-                        <div style="
+        <!-- 5. Plot ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+
+        <div class="orbital-plot-content-wrapper line-plot-wrapper">
+            <div id="orbital_line_plot_5_container" class="line-plot-container">
+                <canvas id="orbital_line_plot_5" class="canvas"></canvas>
+            </div>
+        </div>
+
+        <!-- 1. Plot CONTOUR ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+
+        <div class="orbital-plot-content-wrapper contour-plot-wrapper">
+            <div id="orbital_contour_plot_1_container" class="contour-plot-container">
+                <div id="contour_1" style="height: 500px; width: 80%; margin: 0 auto;"></div>
+            </div>
+            <div class="contour_input_section" style="font-size: 17px;">
+                <div style="
                             display: flex;
                             align-items: center;
                             justify-content: center;">
-                            <div class="orbital-input-wrapper input-wrapper">
-                                <div class="X-input-wrapper" style="width:25rem;">
-                                    \(ky\):
-                                    <input id="x_input_contour_1_kyear" type="text"
-                                        class="X_input_field" value=0
-                                        style="max-width:70px;" />
-                            
-                                    <input id="contour_1_kyear_slide" type="range"
-                                        class="orbital-slide slide"
-                                        name="contour_1_kyear_slide"
-                                        min="-4999" max="0"
-                                        step="1" value="0" style="min-width: 250px">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <div class="orbital-input-wrapper input-wrapper">
+                        <div class="X-input-wrapper" style="width:25rem;">
+                            \(ky\):
+                            <input id="x_input_contour_1_kyear" type="text" class="X_input_field" value=0
+                                style="max-width:70px;" />
 
-                <!-- 2. Plot CONTOUR ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-
-                <div class="orbital-plot-content-wrapper contour-plot-wrapper">
-                    <div id="orbital_contour_plot_2_container" class="contour-plot-container">
-                        <div id="contour_2" style="height: 500px; width: 80%; margin: 0 auto;"></div>
-                    </div>
-                    <div class="contour_input_section" style="font-size: 17px;">
-                        <div style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;">                            
-                            <div class="orbital-input-wrapper input-wrapper">
-                                <div class="X-input-wrapper" style="width:22rem;">
-                                    \(ky_1\):
-                                    <input id="x_input_contour_2_kyear1" type="text"
-                                        class="X_input_field" value=-125
-                                        style="max-width:70px;" />
-                            
-                                    <input id="contour_2_kyear1_slide" type="range"
-                                        class="orbital-slide slide"
-                                        name="contour_2_kyear_slide"
-                                        min="-4999" max="0"
-                                        step="1" value="-125" style="margin-top: 0.5em; min-width: 12rem">
-                                </div>
-
-                                <div class="X-input-wrapper" style="width:22rem;">
-                                    \(ky_2\):
-                                    <input id="x_input_contour_2_kyear2" type="text"
-                                        class="X_input_field" value=0 
-                                        style="max-width:70px;"/>
-                            
-                                    <input id="contour_2_kyear2_slide" type="range"
-                                        class="orbital-slide slide"
-                                        name="contour_2_kyear2_slide"
-                                        min="-4999" max="0"
-                                        step="1" value="0" style="min-width: 12rem">
-                                </div>
-
-                                <button class="someBtn" id="contour_2_resetBtn" style="margin:1em 0em 0em 2em;">Reset</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. Plot Contour ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
-
-                <div class="orbital-plot-content-wrapper contour-plot-wrapper">
-                    <div id="orbital_contour_plot_3_container" class="contour-plot-container">
-                        <div id="contour_3" style="height: 500px; width: 80%; margin: 0 auto;"></div>
-                    </div>
-                    <div class="contour_input_section">
-                        <div style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;">                            
-                            <div class="orbital-input-wrapper input-wrapper">       
-                                <div class="X-input-wrapper" style="width:18rem;">
-                                    <div>
-                                        \(eccentricity\):
-                                        <input id="x_input_contour_3_ecc" type="text"
-                                            class="X_input_field" value=0.0268550999
-                                            style="width: 8rem; float:right;" />
-                                    </div>
-                            
-                                    <input id="contour_3_ecc_slide" type="range"
-                                        class="orbital-slide slide"
-                                        name="contour_3_ecc_slide"
-                                        min="0" max="0.25"
-                                        step=".0001" value="0.0268550999"
-                                        style="min-width: 15rem">
-                                </div>
-
-                                <div class="X-input-wrapper" style="width:18rem;">
-                                    <div>
-                                        \(obliquity\):
-                                        <input id="x_input_contour_3_obl" type="text"
-                                            class="X_input_field" value=22.525
-                                            style="width: 8rem; float:right;" />
-                                    </div>
-                            
-                                    <input id="contour_3_obl_slide" type="range"
-                                        class="orbital-slide slide"
-                                        name="contour_2_kyear2_slide"
-                                        min="-90" max="90"
-                                        step="0.001" value="22.525" 
-                                        style="min-width: 15rem">
-                                </div>
-
-                                <div class="X-input-wrapper" style="width:18rem;">
-                                    <div>
-                                        \(long\_perh\):
-                                        <input id="x_input_contour_3_long" type="text"
-                                            class="X_input_field" value=-83619.1209
-                                            style="width: 8rem; float:right;" />
-                                    </div>
-                            
-                                    <input id="contour_3_long_slide" type="range"
-                                        class="orbital-slide slide"
-                                        name="contour_2_kyear2_slide"
-                                        min="-100000" max="100000"
-                                        step="1" value="-83619.1209"
-                                        style="min-width: 15rem; padding:0px;">
-                                </div>
-                                <button class="someBtn" id="contour_3_resetBtn" style="margin:2em;">Reset</button>
-                            </div>
+                            <input id="contour_1_kyear_slide" type="range" class="orbital-slide slide"
+                                name="contour_1_kyear_slide" min="-4999" max="0" step="1" value="0"
+                                style="min-width: 250px">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- INPUT SECTION ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
 
-        <div id="custom-input-section">
-            <div id="orbital_input_section" class="orbital-input-section">
-                <!--<div class="orbital-input-wrapper input-wrapper">
+        <!-- 2. Plot CONTOUR ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+
+        <div class="orbital-plot-content-wrapper contour-plot-wrapper">
+            <div id="orbital_contour_plot_2_container" class="contour-plot-container">
+                <div id="contour_2" style="height: 500px; width: 80%; margin: 0 auto;"></div>
+            </div>
+            <div class="contour_input_section" style="font-size: 17px;">
+                <div style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;">
+                    <div class="orbital-input-wrapper input-wrapper">
+                        <div class="X-input-wrapper" style="width:22rem;">
+                            \(ky_1\):
+                            <input id="x_input_contour_2_kyear1" type="text" class="X_input_field" value=-125
+                                style="max-width:70px;" />
+
+                            <input id="contour_2_kyear1_slide" type="range" class="orbital-slide slide"
+                                name="contour_2_kyear_slide" min="-4999" max="0" step="1" value="-125"
+                                style="margin-top: 0.5em; min-width: 12rem">
+                        </div>
+
+                        <div class="X-input-wrapper" style="width:22rem;">
+                            \(ky_2\):
+                            <input id="x_input_contour_2_kyear2" type="text" class="X_input_field" value=0
+                                style="max-width:70px;" />
+
+                            <input id="contour_2_kyear2_slide" type="range" class="orbital-slide slide"
+                                name="contour_2_kyear2_slide" min="-4999" max="0" step="1" value="0"
+                                style="min-width: 12rem">
+                        </div>
+
+                        <button class="someBtn" id="contour_2_resetBtn" style="margin:1em 0em 0em 2em;">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Plot Contour ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+
+        <div class="orbital-plot-content-wrapper contour-plot-wrapper">
+            <div id="orbital_contour_plot_3_container" class="contour-plot-container">
+                <div id="contour_3" style="height: 500px; width: 80%; margin: 0 auto;"></div>
+            </div>
+            <div class="contour_input_section">
+                <div style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;">
+                    <div class="orbital-input-wrapper input-wrapper">
+                        <div class="X-input-wrapper" style="width:18rem;">
+                            <div>
+                                \(eccentricity\):
+                                <input id="x_input_contour_3_ecc" type="text" class="X_input_field" value=0.0268550999
+                                    style="width: 8rem; float:right;" />
+                            </div>
+
+                            <input id="contour_3_ecc_slide" type="range" class="orbital-slide slide"
+                                name="contour_3_ecc_slide" min="0" max="0.25" step=".0001" value="0.0268550999"
+                                style="min-width: 15rem">
+                        </div>
+
+                        <div class="X-input-wrapper" style="width:18rem;">
+                            <div>
+                                \(obliquity\):
+                                <input id="x_input_contour_3_obl" type="text" class="X_input_field" value=22.525
+                                    style="width: 8rem; float:right;" />
+                            </div>
+
+                            <input id="contour_3_obl_slide" type="range" class="orbital-slide slide"
+                                name="contour_2_kyear2_slide" min="-90" max="90" step="0.001" value="22.525"
+                                style="min-width: 15rem">
+                        </div>
+
+                        <div class="X-input-wrapper" style="width:18rem;">
+                            <div>
+                                \(long\_perh\):
+                                <input id="x_input_contour_3_long" type="text" class="X_input_field" value=-83619.1209
+                                    style="width: 8rem; float:right;" />
+                            </div>
+
+                            <input id="contour_3_long_slide" type="range" class="orbital-slide slide"
+                                name="contour_2_kyear2_slide" min="-100000" max="100000" step="1" value="-83619.1209"
+                                style="min-width: 15rem; padding:0px;">
+                        </div>
+                        <button class="someBtn" id="contour_3_resetBtn" style="margin:2em;">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- INPUT SECTION ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -->
+
+    <div id="custom-input-section">
+        <div id="orbital_input_section" class="orbital-input-section">
+            <!--<div class="orbital-input-wrapper input-wrapper">
                     <div>\(C_a\)</div>
                     <div id="orbital_Ca_value"
                         name="orbital_slide_value"
@@ -282,7 +269,7 @@
                          min="-0.001" max="-0.0001"
                             step="0.0001" value="-0.001"> 
                 </div>-->
-                <!-- <div class="orbital-input-wrapper input-wrapper">
+            <!-- <div class="orbital-input-wrapper input-wrapper">
                     <div>\(t\) (integration time)</div>
                     <div id="orbital_T_value"
                         name="orbital_slide_value"
@@ -295,32 +282,22 @@
 
                 </div> -->
 
-                <div class="orbital-input-wrapper input-wrapper">
-                    <div>Latitude</div>
-                    <div id="orbital_lat_value"
-                        name="orbital_slide_value"
-                        class="orbitalslide-value slide-value">65</div>
-                    <input id="orbital_lat_slide" type="range"
-                        class="orbital-slide slide"
-                        name="orbital_slide"
-                        min="-89" max="89"
-                        step="1" value="65">
-                </div>
+            <div class="orbital-input-wrapper input-wrapper">
+                <div>Latitude</div>
+                <div id="orbital_lat_value" name="orbital_slide_value" class="orbitalslide-value slide-value">65</div>
+                <input id="orbital_lat_slide" type="range" class="orbital-slide slide" name="orbital_slide" min="-89"
+                    max="89" step="1" value="65">
+            </div>
 
-                <div class="orbital-input-wrapper input-wrapper">
-                    <div id="dayval"></div>
-                    <div id="orbital_day_value"
-                        name="orbital_slide_value"
-                        class="orbitalslide-value slide-value">172</div>
-                    <input id="orbital_day_slide" type="range"
-                        class="orbital-slide slide"
-                        name="orbital_slide"
-                        min="1" max="365"
-                        step="1" value="172">
+            <div class="orbital-input-wrapper input-wrapper">
+                <div id="dayval"></div>
+                <div id="orbital_day_value" name="orbital_slide_value" class="orbitalslide-value slide-value">172</div>
+                <input id="orbital_day_slide" type="range" class="orbital-slide slide" name="orbital_slide" min="1"
+                    max="365" step="1" value="172">
 
-                </div>
+            </div>
 
-                <!-- <div class="orbital-input-wrapper input-wrapper"
+            <!-- <div class="orbital-input-wrapper input-wrapper"
                     style="min-width: 100px;">
                     <div>random start value</div>
                     <label class="switch">
@@ -329,33 +306,30 @@
                         <span class="switch-slider"></span>
                     </label>
                 </div> -->
-                <button class="someBtn" id="orbital_resetBtn">Reset</button>
-            </div>
+            <button class="someBtn" id="orbital_resetBtn">Reset</button>
         </div>
+    </div>
 
-        <!-- FOOTER -->
-        <div class="placeholder"
-            style="width:100%;height:62px;"></div>
-        <div id="footer" style="text-align:center; margin:0 auto; width:
-            50%; font-size: 16px;">Site developed by <a
-                href="https://www.b-schwertfeger.de">Benjamin
-                T. Schwertfeger</a> © 2021
-        </div>
-        <div class="placeholder" style="width:100%;height:100px;"></div>
+    <!-- FOOTER -->
+    <div class="placeholder" style="width:100%;height:62px;"></div>
+    <div id="footer" style="text-align:center; margin:0 auto; width:
+            50%; font-size: 16px;">Site developed by <a href="https://www.b-schwertfeger.de">Benjamin
+            T. Schwertfeger</a> © 2021
+    </div>
+    <div class="placeholder" style="width:100%;height:100px;"></div>
 
-        <script>
-            $(document).ready( function() {
-                var topOfOthDiv = $("#devider").offset().top;
-                $(window).scroll(function() {
-                    if($(window).scrollTop() < topOfOthDiv) { //scrolled past the other div?
-                        $("#custom-input-section").show(); //reached the desired point -- show div
-                    }
-                    else{
-                        $("#custom-input-section").hide(); //else above the desired point -- hide div
-                    }
-                });
+    <script>
+        $(document).ready(() => {
+            var topOfOthDiv = $("#devider").offset().top;
+            $(window).scroll(() => {
+                if ($(window).scrollTop() < topOfOthDiv)  //scrolled past the other div?
+                    $("#custom-input-section").show(); //reached the desired point -- show div
+                else
+                    $("#custom-input-section").hide(); //else above the desired point -- hide div
             });
+        });
 
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
