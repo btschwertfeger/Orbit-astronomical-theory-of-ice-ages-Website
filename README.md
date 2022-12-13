@@ -1,4 +1,4 @@
-# Orbit-astronomical-theory-of-ice-ages
+# [Orbit and astronomical theory of ice ages - Website](https://btschwertfeger.github.io/Orbit-astronomical-theory-of-ice-ages-Website/)
 
 This repository includes a website, as well as a Jupyter notebook, which provides as teaching material for various courses. It was created for the course "Climate Systems II" at the University of Bremen.
 
@@ -11,7 +11,8 @@ Insolation over time and space:
 
 ## Availability
 
-This can be found here: [www.awi.de/...](https://www.awi.de/fileadmin/user_upload/AWI/Forschung/Klimawissenschaft/Dynamik_des_Palaeoklimas/OrbitalTheoryOfIceAges/) and <a href="https://b-schwertfeger.de/projects/awi-work/OrbitalTheory/" target="_blank" >here</a> in case the first link does not work anymore.
+- [https://btschwertfeger.github.io/Orbit-astronomical-theory-of-ice-ages-Website/](https://btschwertfeger.github.io/Orbit-astronomical-theory-of-ice-ages-Website/)
+- [https://www.awi.de/ ....](https://www.awi.de/fileadmin/user_upload/AWI/Forschung/Klimawissenschaft/Dynamik_des_Palaeoklimas/OrbitalTheoryOfIceAges/)
 
 ## References
 
@@ -22,4 +23,5 @@ Calculations, plots and illustrations are based on the work of Ian Eisenman and 
 - Berger A. (1978). Long-term variations of daily insolation and Quaternary climatic changes. Journal of Atmospheric Science, 35(12), 2362-2367.
 
 Orbital data source:
-http://eisenman.ucsd.edu/code/daily_insolation.m
+
+- http://eisenman.ucsd.edu/code/daily_insolation.m
