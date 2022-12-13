@@ -12,9 +12,7 @@
  **/
 
 const newton = require('modified-newton-raphson');
-
 const utils = require('./utils')
-
 
 $(document).ready(() => {
     document.getElementById('dayval').innerHTML = utils.dateFromDay(2021, parseInt(document.getElementById('orbital_day_slide').value));
@@ -77,10 +75,6 @@ function processData(allText, kyear) {
     plot_contour_1();
     plot_contour_2();
     plot_contour_3();
-
-
-
-    // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
 }
 /**
  * ============================================================
@@ -191,7 +185,7 @@ function calendar(epsilon, VE, int = true) {
         (365-sum of all integer part) days are distributed by the size of the month's decimal parts.
         
         Doing this, every year gets 365 days and they are reasonable distributed.
-        */
+    */
 
     if (!int) return laengen_dec;
 

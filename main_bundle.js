@@ -13,9 +13,7 @@
  **/
 
 const newton = require('modified-newton-raphson');
-
 const utils = require('./utils')
-
 
 $(document).ready(() => {
     document.getElementById('dayval').innerHTML = utils.dateFromDay(2021, parseInt(document.getElementById('orbital_day_slide').value));
@@ -78,10 +76,6 @@ function processData(allText, kyear) {
     plot_contour_1();
     plot_contour_2();
     plot_contour_3();
-
-
-
-    // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- 
 }
 /**
  * ============================================================
