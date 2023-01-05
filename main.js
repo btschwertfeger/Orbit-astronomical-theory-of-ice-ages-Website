@@ -6,7 +6,7 @@
  * @email benjamin.schwertfeger@awi.de
  * @email development@b-schwertfeger.de
  * @link https://b-schwertfeger.de
- * @link https://github.com/btschwertfeger-AWI-Workspace/Orbit-astronomical-theory-of-ice-ages
+ * @link https://github.com/btschwertfeger/Orbit-astronomical-theory-of-ice-ages-Website
  * required: https://github.com/scijs/modified-newton-raphson
  * sudo watchify main.js -o main_bundle.js
  **/
