@@ -1,12 +1,10 @@
 /**
  * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
  * @link https://awi.de
- * 
+ *
  * @author Benjamin Thomas Schwertfeger (2022)
- * @email benjamin.schwertfeger@awi.de
  * @email development@b-schwertfeger.de
- * @link https://b-schwertfeger.de
- * @link https://github.com/btschwertfeger/Orbit-astronomical-theory-of-ice-ages-Website
+ * @link https://github.com/btschwertfeger
  **/
 
 module.exports = {
