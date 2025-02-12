@@ -63,7 +63,7 @@
 
           $.ajax({
             type: "GET",
-            url: "static/orbital_param.csv",
+            url: "./static/orbital_param.csv",
             dataType: "text",
             success: (data) => {
               const kyear = [...new Array(TIMESTEPS)].map(
