@@ -1,12 +1,11 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 /**
  * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
  * @link https://awi.de
- * 
+ *
  * @author Benjamin Thomas Schwertfeger (2022)
- * @email benjamin.schwertfeger@awi.de
  * @email development@b-schwertfeger.de
- * @link https://b-schwertfeger.de
- * @link https://github.com/btschwertfeger/Orbit-astronomical-theory-of-ice-ages-Website
+ * @link https://github.com/btschwertfeger
  * required: https://github.com/scijs/modified-newton-raphson
  * sudo watchify main.js -o main_bundle.js
  **/
@@ -21,7 +20,7 @@ $(document).ready(() => {
 
     $.ajax({
         type: 'GET',
-        url: 'orbital_param.csv',
+        url: '../static/orbital_param.csv',
         dataType: 'text',
         success: (data) => {
             const kyear = [...new Array(TIMESTEPS)].map((elem, index) => index / 10);
@@ -78,19 +77,19 @@ function processData(allText, kyear) {
 }
 /**
  * ============================================================
-   ____                            _        _   _             
-  / ___|___  _ __ ___  _ __  _   _| |_ __ _| |_(_) ___  _ __  
- | |   / _ \| '_ ` _ \| '_ \| | | | __/ _` | __| |/ _ \| '_ \ 
+   ____                            _        _   _
+  / ___|___  _ __ ___  _ __  _   _| |_ __ _| |_(_) ___  _ __
+ | |   / _ \| '_ ` _ \| '_ \| | | | __/ _` | __| |/ _ \| '_ \
  | |__| (_) | | | | | | |_) | |_| | || (_| | |_| | (_) | | | |
   \____\___/|_| |_| |_| .__/ \__,_|\__\__,_|\__|_|\___/|_| |_|
-                      |_|     
+                      |_|
  */
 
 /**
  * Computes the days per months based on eccentricity and longp
- * @param {*} epsilon 
- * @param {*} VE 
- * @returns 
+ * @param {*} epsilon
+ * @param {*} VE
+ * @returns
  */
 function calendar(epsilon, VE, int = true) {
     VE = 2 * Math.PI - (VE * 2 * Math.PI / 360);
@@ -98,7 +97,7 @@ function calendar(epsilon, VE, int = true) {
 
     let
         times = [...new Array(13)].map(() => 0), // np.zeros(13)
-        laengen_dec = [...new Array(12)].map(() => 0), // np.zeros(12) 
+        laengen_dec = [...new Array(12)].map(() => 0), // np.zeros(12)
         angles = utils.arange(0, 2 * Math.PI + Math.PI / 6, Math.PI / 6);
 
     let n = times.length;
@@ -138,9 +137,9 @@ function calendar(epsilon, VE, int = true) {
 
     /**
      * Shift to April 1st:
-        For calculating the months, the starting day has to be shifted from the day of the VE (fixed at March 21st) to April 1st. 
-        Since the time between nowadays March 21st and April 1st may not be true for past calendars, 
-        we define April 1st by the angle. 
+        For calculating the months, the starting day has to be shifted from the day of the VE (fixed at March 21st) to April 1st.
+        Since the time between nowadays March 21st and April 1st may not be true for past calendars,
+        we define April 1st by the angle.
         Therefore we calculate the angle between nowadays March 21st, noon and the 10.5 days-later-April 1st and afterwards
         calculate the day of April 1st for the past calendar.
     ´*/
@@ -161,7 +160,7 @@ function calendar(epsilon, VE, int = true) {
     for (let i in utils.arange(0, n - 3, 1)) {
         i = parseInt(i)
         const r = (times[i + 1] - times[i]);
-        laengen_dec[i] = ((r % 365) + 365) % 365; // javascript modulo bug for negative numbers.. this is how to avoid 
+        laengen_dec[i] = ((r % 365) + 365) % 365; // javascript modulo bug for negative numbers.. this is how to avoid
     }
 
     // change to right order: January, February, ....
@@ -183,7 +182,7 @@ function calendar(epsilon, VE, int = true) {
     /**
      * Use the 'largest remainder method' for rounding: Each month gets his 'interger-part'-number of days, the remaining
         (365-sum of all integer part) days are distributed by the size of the month's decimal parts.
-        
+
         Doing this, every year gets 365 days and they are reasonable distributed.
     */
 
@@ -314,11 +313,11 @@ function insolDec21_param(ecc, obliquity, long_perh, LAT) {
 
 function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 1) {
     /* Insolation, converted and adapted from Huybers Code, based on Berger 1991
-    
+
     Description:
     Computes daily average insolation as a function of day and latitude at
     any point during the past 5 million years.
- 
+
     Inputs:
     kyear:    Thousands of years before present (0 to 5000).
     lat:      Latitude in degrees (-90 to 90).
@@ -335,10 +334,10 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
     Output:
     Fsw = Daily average solar radiation in W/m^2.
     Can also output orbital parameters.
- 
+
     This script contains orbital parameter data for the past 50000 years
     from Berger and Loutre (1991).
- 
+
     Detailed description of calculation:
     Values for eccentricity, obliquity, and longitude of perihelion for the
     past 5 Myr are taken from Berger and Loutre 1991 (data from
@@ -347,14 +346,14 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
     of angular momentum (Kepler's Second Law).  Given the orbital parameters
     and solar longitude, daily average insolation is calculated exactly
     following Berger 1978.
- 
+
     References:
     Berger A. and Loutre M.F. (1991). Insolation values for the climate of
         the last 10 million years. Quaternary Science Reviews, 10(4), 297-317.
     Berger A. (1978). Long-term variations of daily insolation and
         Quaternary climatic changes. Journal of Atmospheric Science, 35(12),
         2362-2367.
- 
+
     Authors:
         Ian Eisenman and Peter Huybers, Harvard University, August 2006
         eisenman@fas.harvard.edu
@@ -365,7 +364,7 @@ function daily_insolation_param(lat, day, ecc, obliquity, long_perh, day_type = 
         P. Huybers and I. Eisenman, 2006. Integrated summer insolation
         calculations. NOAA/NCDC Paleoclimatology Program Data
         Contribution #2006-079.
-    
+
     */
 
     // // === Get orbital parameters ===
@@ -417,7 +416,7 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
     Description:
     Computes daily average insolation as a function of day and latitude at
     any point during the past 5 million years.
- 
+
     Inputs:
     kyear:    Thousands of years before present (0 to 5000).
     lat:      Latitude in degrees (-90 to 90).
@@ -434,10 +433,10 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
     Output:
     Fsw = Daily average solar radiation in W/m^2.
     Can also output orbital parameters.
- 
+
     This script contains orbital parameter data for the past 50000 years
     from Berger and Loutre (1991).
- 
+
     Detailed description of calculation:
     Values for eccentricity, obliquity, and longitude of perihelion for the
     past 5 Myr are taken from Berger and Loutre 1991 (data from
@@ -446,14 +445,14 @@ function daily_insolation(kyear, lat, day, day_type = 1, fast = true) {
     of angular momentum (Kepler's Second Law).  Given the orbital parameters
     and solar longitude, daily average insolation is calculated exactly
     following Berger 1978.
- 
+
     References:
     Berger A. and Loutre M.F. (1991). Insolation values for the climate of
         the last 10 million years. Quaternary Science Reviews, 10(4), 297-317.
     Berger A. (1978). Long-term variations of daily insolation and
         Quaternary climatic changes. Journal of Atmospheric Science, 35(12),
         2362-2367.
- 
+
     Authors:
         Ian Eisenman and Peter Huybers, Harvard University, August 2006
         eisenman@fas.harvard.edu
@@ -499,7 +498,7 @@ function compute(ecc, obliquity, long_perh, lat, day, day_type = 1) {
 
     // lambda(or solar longitude) is the angular distance along Earth 's orbit measured from spring equinox (21 March)
     let lambda = null;
-    if (day_type == 1) { //calendar days 
+    if (day_type == 1) { //calendar days
         // estimate lambda from calendar day using an approximation from Berger 1978 section 3
         const delta_lambda_m = (day - 80) * 2 * Math.PI / 365.2422;
         const beta = Math.pow((1 - Math.pow(ecc, 2)), (1 / 2))
@@ -579,8 +578,8 @@ function get_orbital_parameter(year) {
 }
 
 /**
-     _     _            ____  _       _       
-    | |   (_)_ __   ___|  _ \| | ___ | |_ ___ 
+     _     _            ____  _       _
+    | |   (_)_ __   ___|  _ \| | ___ | |_ ___
     | |   | | '_ \ / _ \ |_) | |/ _ \| __/ __|
     | |___| | | | |  __/  __/| | (_) | |_\__ \
     |_____|_|_| |_|\___|_|   |_|\___/ \__|___/
@@ -912,8 +911,8 @@ orbital_day_slide.oninput = () => {
 }
 
 /** ============================================================
-      ____            _                   ____  _       _       
-     / ___|___  _ __ | |_ ___  _   _ _ __|  _ \| | ___ | |_ ___ 
+      ____            _                   ____  _       _
+     / ___|___  _ __ | |_ ___  _   _ _ __|  _ \| | ___ | |_ ___
     | |   / _ \| '_ \| __/ _ \| | | | '__| |_) | |/ _ \| __/ __|
     | |__| (_) | | | | || (_) | |_| | |  |  __/| | (_) | |_\__ \
      \____\___/|_| |_|\__\___/ \__,_|_|  |_|   |_|\___/ \__|___/
@@ -1268,3 +1267,202 @@ contour_3_resetBtn.onclick = () => {
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
 // EOF
 /* ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- */
+},{"./utils":2,"modified-newton-raphson":3}],2:[function(require,module,exports){
+/**
+ * © Alfred-Wegener-Institute Bremerhaven, Germany (2022)
+ * @link https://awi.de
+ *
+ * @author Benjamin Thomas Schwertfeger (2022)
+ * @email development@b-schwertfeger.de
+ * @link https://github.com/btschwertfeger
+ **/
+
+module.exports = {
+    dateFromDay: (year, day) => {
+        day -= 1;
+        Date.prototype.addDays = function (days) {
+            const date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        };
+
+        let date = new Date(year, 0); // initialize a date in `year-01-01`
+        let newdate = date.addDays(day)
+
+        return newdate.toLocaleString('default', {
+            month: 'long'
+        }) + ', ' + newdate.getDate();
+    },
+    convolve: (vec1, vec2) => {
+        // (2021) source: https://gist.github.com/jdpigeon/1de0b43eed7ae7e4080818cad53be200
+        if (vec1.length === 0 || vec2.length === 0) throw new Error('Vectors can not be empty!')
+
+        const
+            volume = vec1,
+            kernel = vec2,
+            convVec = [];
+
+        let displacement = 0;
+
+        for (let i = 0; i < volume.length; i++) {
+            for (let j = 0; j < kernel.length; j++) {
+                if (displacement + j !== convVec.length) convVec[displacement + j] = convVec[displacement + j] + volume[i] * kernel[j];
+                else convVec.push(volume[i] * kernel[j]);
+            }
+            displacement++;
+        }
+        return convVec;
+    },
+    get2dmax: (arr) => {
+        return Math.max.apply(null, arr.map((row) => {
+            return Math.max.apply(Math, row);
+        }));
+    },
+    get2dmin: (arr) => {
+        return Math.min.apply(null, arr.map((row) => {
+            return Math.min.apply(Math, row);
+        }));
+    },
+    rep: (arr, n) => {
+        // repeat array n times
+        let output = new Array(n * arr.length);
+        for (let i = 0; i < output.length; i++)
+            output[i] = arr[i % arr.length];
+
+        return output
+    },
+    avg: (grades) => {
+        const total = grades.reduce((acc, c) => acc + c, 0);
+        return total / grades.length;
+    },
+    arange: (start, end, step = 1) => {
+        var
+            range = [],
+            typeofStart = typeof start,
+            typeofEnd = typeof end;
+
+        if (step === 0) throw TypeError('Step cannot be zero.');
+        if (typeofStart == 'undefined' || typeofEnd == 'undefined') throw TypeError('Must pass start and end arguments.');
+        else if (typeofStart != typeofEnd) throw TypeError('Start and end arguments must be of same type.');
+
+        typeof step == 'undefined' && (step = 1);
+
+        if (end < start) step = -step;
+        if (typeofStart == 'number') {
+            while (step > 0 ? end >= start : end <= start) {
+                range.push(start);
+                start += step;
+            }
+            range.push(start);
+        } else throw TypeError('Only string and number types are supported');
+        return range;
+    },
+    divmod: (x, y) => { return [Math.floor(x / y), x % y] },
+    argMax: (arr) => {
+        return arr.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
+    }
+};
+},{}],3:[function(require,module,exports){
+'use strict';
+
+module.exports = modifiedNewtonRaphson;
+
+function modifiedNewtonRaphson (f, fp, fpp, x0, options) {
+  var x1, y, yp, ypp, tol, maxIter, iter, yph, ymh, yp2h, ym2h, h, hr, h2r, verbose, eps, denom;
+
+  // Iterpret variadic forms:
+  if (typeof fpp !== 'function') {
+    if (typeof fp === 'function') {
+      options = x0;
+      x0 = fpp;
+    } else {
+      options = fpp;
+      x0 = fp;
+      fp = null;
+    }
+    fpp = null;
+  }
+
+  options = options || {};
+  tol = options.tolerance === undefined ? 1e-7 : options.tolerance;
+  eps = options.epsilon === undefined ? 2.220446049250313e-16 : options.epsion;
+  maxIter = options.maxIterations === undefined ? 20 : options.maxIterations;
+  h = options.h === undefined ? 1e-4 : options.h;
+  verbose = options.verbose === undefined ? false : options.verbose;
+  hr = 1 / h;
+  h2r = hr * hr;
+
+  iter = 0;
+  while (iter++ < maxIter) {
+    // Compute the value of the function:
+    y = f(x0);
+
+    // Compute the second derivative using a fourth order central difference:
+    if (fpp) {
+      yp = fp(x0);
+      ypp = fpp(x0);
+    } else {
+      if (fp) {
+        // Has first derivative specified:
+        yp = fp(x0);
+
+        // Evaluate first derivative to compute second numerically:
+        yph = fp(x0 + h);
+        ymh = fp(x0 - h);
+        yp2h = fp(x0 + 2 * h);
+        ym2h = fp(x0 - 2 * h);
+
+        // Second derivative is first derivative of the first derivative:
+        ypp = (8 * (yph - ymh) + (ym2h - yp2h)) * hr / 12;
+      } else {
+        // Needs first and second numerical derivatives:
+        yph = f(x0 + h);
+        ymh = f(x0 - h);
+        yp2h = f(x0 + 2 * h);
+        ym2h = f(x0 - 2 * h);
+
+        yp = (8 * (yph - ymh) + (ym2h - yp2h)) * hr / 12;
+        ypp = (-30 * y + 16 * (yph + ymh) - (yp2h + ym2h)) * h2r / 12;
+      }
+    }
+
+    // Check for badly conditioned first derivative (extremely small relative to function):
+    if (Math.abs(yp) <= eps * Math.abs(y)) {
+      if (verbose) {
+        console.log('Modified Newton-Raphson: failed to converged due to nearly zero first derivative');
+      }
+      return false;
+    }
+
+    denom = (yp * yp - y * ypp);
+
+    if (denom === 0) {
+      if (verbose) {
+        console.log('Modified Newton-Raphson: failed to converged due to divide by zero');
+      }
+      return false;
+    }
+
+    // Update the guess:
+    x1 = x0 - y * yp / denom;
+
+    // Check for convergence:
+    if (Math.abs(x1 - x0) <= tol * Math.abs(x1)) {
+      if (verbose) {
+        console.log('Modified Newton-Raphson: converged to x = ' + x1 + ' after ' + iter + ' iterations');
+      }
+      return x1;
+    }
+
+    // Transfer update to the new guess:
+    x0 = x1;
+  }
+
+  if (verbose) {
+    console.log('Modified Newton-Raphson: Maximum iterations reached (' + maxIter + ')');
+  }
+
+  return false;
+}
+
+},{}]},{},[1]);
