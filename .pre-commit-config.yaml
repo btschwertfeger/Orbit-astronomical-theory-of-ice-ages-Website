@@ -7,17 +7,18 @@
 
 repos:
   - repo: https://github.com/gitleaks/gitleaks
-    rev: v8.23.1
+    rev: v8.30.0
     hooks:
       - id: gitleaks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-yaml
       - id: check-json
       - id: check-merge-conflict
       - id: check-added-large-files
         args: [--maxkb=500]
+        exclude: orbital_and_astronomical_theroy_of_ice_ages\.html
       - id: check-executables-have-shebangs
       - id: trailing-whitespace
       - id: fix-byte-order-marker
@@ -25,11 +26,6 @@ repos:
       - id: end-of-file-fixer
       - id: detect-private-key
   - repo: https://github.com/rbubley/mirrors-prettier
-    rev: v3.4.2
+    rev: v3.8.1
     hooks:
       - id: prettier
-  # - repo: https://github.com/pre-commit/mirrors-eslint
-  #   rev: v9.20.0
-  #   hooks:
-  #     - id: eslint
-  #       args: [--fix]

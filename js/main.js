@@ -628,7 +628,7 @@ function get_orbital_parameter(year) {
 function plotALL(input = null, init = false) {
   let day = 172,
     lat = 65;
-  if (input !== null) (day = input.day), (lat = input.lat);
+  if (input !== null) ((day = input.day), (lat = input.lat));
 
   // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
 
@@ -926,8 +926,8 @@ const orbital_lat_slide = document.getElementById("orbital_lat_slide"),
 orbital_RESET_BTN.onclick = () => {
   plotALL(); // resets the plot
 
-  (orbital_lat_slide.value = default_orbital_values.lat),
-    (orbital_day_slide.value = default_orbital_values.day);
+  ((orbital_lat_slide.value = default_orbital_values.lat),
+    (orbital_day_slide.value = default_orbital_values.day));
 
   orbital_slide_value_fields.forEach((element, index) => {
     // Reset value fields

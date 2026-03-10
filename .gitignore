@@ -1,8 +1,6 @@
-
-deploy.sh
 .DS_Store
-
 __pycache__
 .vscode/
 .ipynb_checkpoints/
 node_modules/
+js/main_bundle.js
